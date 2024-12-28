@@ -181,7 +181,7 @@ def _apply_by_file_index(bo, xform, aggregator):
 
     for idx, session in enumerate(bo.sessions.unique()):
         session_xform = xform(bo.get_slice(sample_inds=np.where(bo.sessions == session)[0], inplace=False))
-        if idx is 0:
+        if idx == 0:
             results = session_xform
         else:
             results = aggregator(results, session_xform)
@@ -940,7 +940,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
         nbo.locs.iloc[min_ind[0], :] = mo.locs.iloc[min_ind[1], :]
         d[min_ind[0]] = np.inf
         d[:, min_ind[1]] = np.inf
-    if not match_threshold is 0 or None:
+    if not match_threshold in (0, none):
 
         if match_threshold is 'auto':
             v_size = _vox_size(mo.locs)
@@ -1384,7 +1384,7 @@ def _data_and_samplerate_by_file_index(bo, xform, **kwargs):
     sample_rate = []
 
     for idx, session in enumerate(bo.sessions.unique()):
-        if idx is 0:
+        if idx == 0:
             data_results, session_results, sr_results = xform(bo.data.loc[bo.sessions == session],
                                                                        bo.sessions.loc[bo.sessions == session],
                                                                        bo.sample_rate[idx], **kwargs)
