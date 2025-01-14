@@ -637,7 +637,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
             'zscored.')
             data = bo.get_data().values
         else:
-            data = bo.get_zscore_data().values
+            data = bo.get_zscore_data()
     else:
         raise('Unsupported preprocessing option: ' + preprocess)
 
