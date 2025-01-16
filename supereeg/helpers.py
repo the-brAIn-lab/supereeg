@@ -254,7 +254,7 @@ def _z_score(bo):
 
     """
     def z_score_xform(bo):
-        return zscore(bo.get_data())
+        return zscore(bo.get_data().values)
 
     def vstack_aggregrate(x1, x2):
         return np.vstack((x1, x2))
