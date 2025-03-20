@@ -245,12 +245,14 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return torch.mul(torch.tensor(bo.dur), _r2z(torch.tensor(1 - squareform(pdist(bo.get_data().T, 'correlation')))))
+        return torch.mul(torch.tensor(bo.dur, dtype=torch.float64), 
+                         _r2z(torch.tensor(1 - squareform(pdist(bo.get_data().T, 'correlation')), dtype=torch.float64)))
 
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
     #weight each session by recording time
-    return _z2r(summed_zcorrs / torch.sum(torch.tensor(bo.dur)))
+    # FIXME check torch sum axes
+    return _z2r(summed_zcorrs / torch.sum(torch.tensor(bo.dur, dtype=torch.float64)))
 
 
 def _z_score(bo):
@@ -294,7 +296,7 @@ def _z2r(z):
     """
     warnings.simplefilter('ignore')
     if isinstance(z, list):
-        z = torch.tensor(z)
+        z = torch.tensor(z, dtype=torch.float64)
     r = (torch.exp(2 * z) - 1) / (torch.exp(2 * z) + 1)
     if isinstance(r, torch.Tensor):
         r[torch.isinf(z) & (z > 0)] = 1
@@ -471,7 +473,7 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     #if gpu:
     #    return _blur_corrmat_cupy(Z, Zp, weights)
 
-    weights = torch.tensor(weights)
+    weights = torch.tensor(weights, dtype=torch.float64)
 
     triu_inds = np.triu_indices(Z.shape[0],k=1)
 
@@ -490,6 +492,7 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     K_neg = torch.zeros(n, n)
     W = torch.zeros(n, n)
 
+    # FIXME check pytorch conversion check sum axes
     wclose = torch.isclose(weights, torch.zeros_like(weights)).sum(axis=1)
     matches = torch.triu(torch.outer(wclose, wclose)).to(bool)
 
@@ -548,8 +551,8 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     n = full_locs.shape[0]
     Z_padded = torch.zeros(n, n, dtype=Z.dtype)
     idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
-    known_idxs = torch.tensor(idxs['index_x'].values)
-    locs_idxs = torch.tensor(idxs['index_y'].values)
+    known_idxs = torch.tensor(idxs['index_x'].values, dtype=torch.float64)
+    locs_idxs = torch.tensor(idxs['index_y'].values, dtype=torch.float64)
     Z_padded[torch.meshgrid(known_idxs, known_idxs)] = Z[torch.meshgrid(locs_idxs, locs_idxs)]
     return Z_padded
 
@@ -647,15 +650,15 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         Compiled reconstructed timeseries
     """
     if preprocess==None:
-        data = torch.tensor(bo.get_data().values)
+        data = torch.tensor(bo.get_data().values, dtype=torch.float64)
     elif preprocess=='zscore':
         if bo.data.shape[0]<3:
             warnings.warn('Not enough samples to zscore so it will be skipped.'
             ' Note that this will cause problems if your data are not already '
             'zscored.')
-            data = torch.tensor(bo.get_data().values)
+            data = torch.tensor(bo.get_data().values, dtype=torch.float64)
         else:
-            data = torch.tensor(bo.get_zscore_data())
+            data = torch.tensor(bo.get_zscore_data(), dtype=torch.float64)
     else:
         raise('Unsupported preprocessing option: ' + preprocess)
 
@@ -680,7 +683,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
 
         from .model import _recover_model #deferred import to remove circular dependency
-        """THIS LOOKS LIKE A BUG"""
+        """THIS LOOKS LIKE A BUG BECAUSE IT'S MISSING AN INPUT"""
         Z = _recover_model(*_blur_corrmat(Z, rbf_weights, mo.gpu), z_transform=True)
 
 

@@ -164,7 +164,7 @@ class Model(object):
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
 
                 self.locs = locs
-                self.numerator = _to_log_complex(_r2z(torch.tensor(data)))
+                self.numerator = _to_log_complex(_r2z(torch.tensor(data, dtype=torch.float64)))
                 self.denominator = torch.zeros_like(self.numerator, dtype=torch.float32)
             elif isinstance(data, torch.Tensor):
                 assert not (locs is None), 'must specify model locations'
