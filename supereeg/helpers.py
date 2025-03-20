@@ -514,6 +514,7 @@ def _blur_corrmat(Z, Zp, weights, gpu):
         next_weights = xweights[ktx] + yweights[kty]
         m = torch.max(next_weights)
         if not torch.isfinite(m): m = 0
+        # FIXME check pytorch sum axes
         W[x, y] = torch.log(torch.sum(torch.exp(next_weights - m))) + m
         K_pos[x, y] = torch.log(torch.sum(torch.exp(logZ_pos + next_weights - m))) + m
         K_neg[x, y] = torch.log(torch.sum(torch.exp(logZ_neg + next_weights - m))) + m
@@ -553,6 +554,7 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
     known_idxs = torch.tensor(idxs['index_x'].values, dtype=torch.float64)
     locs_idxs = torch.tensor(idxs['index_y'].values, dtype=torch.float64)
+    # FIXME check pytorch conversion
     Z_padded[torch.meshgrid(known_idxs, known_idxs)] = Z[torch.meshgrid(locs_idxs, locs_idxs)]
     return Z_padded
 
@@ -692,6 +694,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
     known_inds, unknown_inds = known_unknown(mo.get_locs().values, bo.get_locs().values,
                                                   bo.get_locs().values)
     Kaa = K[known_inds, :][:, known_inds]
+    # FIXME check pytorch conversion
     Kaa_inv = torch.linalg.pinv(Kaa)
 
     Kba = K[unknown_inds, :][:, known_inds]
@@ -714,6 +717,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
                 print('issue with chunksize: ' + str(x))
     else:
         combined_data = torch.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
+        # FIXME check pytorch conversion
         combined_data[:, unknown_inds] = torch.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
                                                             filter_chunks)))
         combined_data[:, known_inds] = data
