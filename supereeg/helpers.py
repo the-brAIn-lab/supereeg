@@ -245,14 +245,13 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return torch.mul(torch.tensor(bo.dur, dtype=torch.float64), 
-                         _r2z(torch.tensor(1 - squareform(pdist(bo.get_data().T, 'correlation')), dtype=torch.float64)))
+        # FIXME check pytorch conversion
+        return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
 
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
     #weight each session by recording time
-    # FIXME check torch sum axes
-    return _z2r(summed_zcorrs / torch.sum(torch.tensor(bo.dur, dtype=torch.float64)))
+    return _z2r(torch.Tensor(summed_zcorrs / np.sum(bo.dur)))
 
 
 def _z_score(bo):
@@ -324,7 +323,10 @@ def _r2z(r):
 
     """
     warnings.simplefilter('ignore')
-    return 0.5 * (torch.log(1 + r) - torch.log(1 - r))
+    if isinstance(r, torch.Tensor):
+        return 0.5 * (torch.log(1 + r) - torch.log(1 - r))
+    else:
+        return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
 def _log_rbf(to_coords, from_coords, width=20):
@@ -552,9 +554,8 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     n = full_locs.shape[0]
     Z_padded = torch.zeros(n, n, dtype=Z.dtype)
     idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
-    known_idxs = torch.tensor(idxs['index_x'].values, dtype=torch.float64)
-    locs_idxs = torch.tensor(idxs['index_y'].values, dtype=torch.float64)
-    # FIXME check pytorch conversion
+    known_idxs = torch.tensor(idxs['index_x'].values)
+    locs_idxs = torch.tensor(idxs['index_y'].values)
     Z_padded[torch.meshgrid(known_idxs, known_idxs)] = Z[torch.meshgrid(locs_idxs, locs_idxs)]
     return Z_padded
 
@@ -694,8 +695,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
     known_inds, unknown_inds = known_unknown(mo.get_locs().values, bo.get_locs().values,
                                                   bo.get_locs().values)
     Kaa = K[known_inds, :][:, known_inds]
-    # FIXME check pytorch conversion
-    Kaa_inv = torch.linalg.pinv(Kaa)
+    Kaa_inv = torch.tensor(np.linalg.pinv(Kaa), dtype=torch.float64)
 
     Kba = K[unknown_inds, :][:, known_inds]
 
@@ -717,13 +717,12 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
                 print('issue with chunksize: ' + str(x))
     else:
         combined_data = torch.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
-        # FIXME check pytorch conversion
-        combined_data[:, unknown_inds] = torch.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
-                                                            filter_chunks)))
+        combined_data[:, unknown_inds] = torch.tensor(np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
+                                                            filter_chunks))), dtype=torch.float64)
         combined_data[:, known_inds] = data
 
     for s in sessions:
-        combined_data[bo.sessions==s, :] = zscore(combined_data[bo.sessions==s, :])
+        combined_data[bo.sessions==s, :] = torch.tensor(zscore(combined_data[bo.sessions==s, :]), dtype=torch.float64)
 
     return combined_data
 

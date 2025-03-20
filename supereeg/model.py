@@ -614,7 +614,6 @@ class Model(object):
         m1_z = m1.n_subs * m1.get_model(z_transform=True)
         m2_z = m2.n_subs * m2.get_model(z_transform=True)
 
-        # FIXME check pytorch conversion
         m2_z[torch.where(torch.isnan(m2_z))] = 0
         m2_z.fill_diagonal_(1)
 
@@ -704,11 +703,9 @@ def _recover_model(num, denom, z_transform=False):
 
     m = torch.div(_to_exp_real(num), torch.exp(denom)) #numerator and denominator are in log units
     if z_transform:
-        # FIXME check pytorch conversion
         m.fill_diagonal_(torch.inf)
         return m
     else:
         m = _z2r(m)
-        # FIXME check pytorch conversion
         m.fill_diagonal_(1)
         return m
