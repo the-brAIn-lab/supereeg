@@ -40,6 +40,20 @@ try:
 except:
     from itertools import izip_longest as zip_longest
 
+numpy_to_torch_dtype_dict = {
+        np.bool       : torch.bool,
+        np.uint8      : torch.uint8,
+        np.int8       : torch.int8,
+        np.int16      : torch.int16,
+        np.int32      : torch.int32,
+        np.int64      : torch.int64,
+        np.float16    : torch.float16,
+        np.float32    : torch.float32,
+        np.float64    : torch.float64,
+        np.complex64  : torch.complex64,
+        np.complex128 : torch.complex128
+    }
+
 
 def _std(res=None):
     """
@@ -430,7 +444,7 @@ def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
 
     return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
 
-# pytorch
+
 def _blur_corrmat(Z, Zp, weights, gpu):
     """
     Gets full correlation matrix
@@ -453,28 +467,29 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     denominator : Numpy array
         Denominator for the expanded correlation matrix
     """
-    if gpu:
-        return _blur_corrmat_cupy(Z, Zp, weights)
 
-    triu_inds = np.triu_indices(Z.shape[0], k=1)
+    #if gpu:
+    #    return _blur_corrmat_cupy(Z, Zp, weights)
+
+    triu_inds = torch.triu_indices(Z.shape[0], offset=1)
 
     #need to do computations separately for positive and negative values
-    sign_Z_full = np.sign(Z)
+    sign_Z_full = torch.sign(Z)
     sign_Z = sign_Z_full[triu_inds]
-    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
-    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+    logZ_pos = torch.log(torch.mul(sign_Z > 0, Z[triu_inds]))
+    logZ_neg = torch.log(torch.mul(sign_Z < 0, torch.abs(Z[triu_inds])))
 
     n = weights.shape[0]
-    wtx, wty = np.triu_indices(n, k=1)
-    ktx, kty = np.triu_indices(Z.shape[0], k=1)
+    wtx, wty = torch.triu_indices(n, offset=1)
+    ktx, kty = torch.triu_indices(Z.shape[0], offset=1)
     n_kt = len(ktx)
 
-    K_pos = np.zeros([n, n])
-    K_neg = np.zeros([n, n])
-    W = np.zeros([n, n])
+    K_pos = torch.zeros(n, n)
+    K_neg = torch.zeros(n, n)
+    W = torch.zeros(n, n)
 
-    wclose = np.isclose(weights, 0).sum(axis=1)
-    matches = np.triu(np.outer(wclose, wclose)).astype(bool)
+    wclose = torch.isclose(weights, 0).sum(axis=1)
+    matches = torch.triu(torch.outer(wclose, wclose)).to(bool)
 
     for x, y in zip(wtx, wty):
         xweights = weights[x, :]
@@ -484,29 +499,29 @@ def _blur_corrmat(Z, Zp, weights, gpu):
             Z_match_val = Zp[x, y]
             W[x, y] = 0.
             if Z_match_val > 0:
-                K_pos[x, y] = np.log(Z_match_val)
-                K_neg[x, y] = -np.inf
+                K_pos[x, y] = torch.log(Z_match_val)
+                K_neg[x, y] = -torch.inf
             else:
-                K_pos[x, y] = -np.inf
-                K_neg[x, y] = np.log(np.abs(Z_match_val))
+                K_pos[x, y] = -torch.inf
+                K_neg[x, y] = torch.log(torch.abs(Z_match_val))
             continue
 
         next_weights = xweights[ktx] + yweights[kty]
-        m = np.max(next_weights)
-        if not np.isfinite(m): m = 0
-        W[x, y] = np.log(np.sum(np.exp(next_weights - m))) + m
-        K_pos[x, y] = np.log(np.sum(np.exp(logZ_pos + next_weights - m))) + m
-        K_neg[x, y] = np.log(np.sum(np.exp(logZ_neg + next_weights - m))) + m
+        m = torch.max(next_weights)
+        if not torch.isfinite(m): m = 0
+        W[x, y] = torch.log(torch.sum(torch.exp(next_weights - m))) + m
+        K_pos[x, y] = torch.log(torch.sum(torch.exp(logZ_pos + next_weights - m))) + m
+        K_neg[x, y] = torch.log(torch.sum(torch.exp(logZ_neg + next_weights - m))) + m
 
 
     #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
     #set any nans in K_neg.real to 0
     #TODO: the next lines are redundant with code in _to_log_complex; consolidate
-    K_neg = np.multiply(0+1j, K_neg)
-    K_neg.real[np.isnan(K_neg)] = 0
+    K_neg = torch.mul(0+1j, K_neg)
+    K_neg.real[torch.isnan(K_neg)] = 0
     K = K_pos + K_neg
 
-    return K + K.T, W + W.T
+    return K + K.t, W + W.t
 
 def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
@@ -606,7 +621,7 @@ def _fill_upper_triangle(M, value):
     np.fill_diagonal(upper_tri, value)
     return upper_tri
 
-# pytorch
+
 def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_inds=None):
     """
     Reconstruction done by chunking by session
@@ -630,15 +645,15 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         Compiled reconstructed timeseries
     """
     if preprocess==None:
-        data = bo.get_data().values
+        data = torch.tensor(bo.get_data().values)
     elif preprocess=='zscore':
         if bo.data.shape[0]<3:
             warnings.warn('Not enough samples to zscore so it will be skipped.'
             ' Note that this will cause problems if your data are not already '
             'zscored.')
-            data = bo.get_data().values
+            data = torch.tensor(bo.get_data().values)
         else:
-            data = bo.get_zscore_data()
+            data = torch.tensor(bo.get_zscore_data())
     else:
         raise('Unsupported preprocessing option: ' + preprocess)
 
@@ -671,7 +686,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
     known_inds, unknown_inds = known_unknown(mo.get_locs().values, bo.get_locs().values,
                                                   bo.get_locs().values)
     Kaa = K[known_inds, :][:, known_inds]
-    Kaa_inv = np.linalg.pinv(Kaa)
+    Kaa_inv = torch.linalg.pinv(Kaa)
 
     Kba = K[unknown_inds, :][:, known_inds]
 
@@ -684,7 +699,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
 
 
     if recon_loc_inds:
-        combined_data = np.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
+        combined_data = torch.zeros((data.shape[0], len(recon_loc_inds)), dtype=data.dtype)
 
         for x in filter_chunks:
             try:
@@ -692,8 +707,8 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
             except:
                 print('issue with chunksize: ' + str(x))
     else:
-        combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
-        combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
+        combined_data = torch.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
+        combined_data[:, unknown_inds] = torch.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
                                                             filter_chunks)))
         combined_data[:, known_inds] = data
 
