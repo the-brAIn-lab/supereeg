@@ -133,6 +133,7 @@ class Model(object):
                                   n_subs=1, gpu=self.gpu)
 
                     for i in range(1, len(data)):
+                        # pytorch
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
                                           rbf_width=self.rbf_width, n_subs=1,
                                           gpu=self.gpu))
@@ -155,6 +156,7 @@ class Model(object):
                 #self = copy.deepcopy(data)
                 n_subs = self.n_subs
             elif isinstance(data, Brain):
+                # pytorch
                 corrmat = _get_corrmat(data)
                 self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1,
                         gpu=self.gpu)
@@ -163,9 +165,12 @@ class Model(object):
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
 
                 self.locs = locs
+                # pytorch
                 self.numerator = _to_log_complex(_r2z(data))
+                # pytorch
                 self.denominator = np.zeros_like(self.numerator, dtype=np.float32)
 
+        # pytorch
         if not ((numerator is None) or (denominator is None)):
             assert numerator.shape[0] == numerator.shape[1], 'numerator must be a square matrix'
             assert denominator.shape[0] == denominator.shape[1], 'denominator must be a square matrix'
@@ -178,6 +183,7 @@ class Model(object):
                 self.numerator = numerator
                 self.denominator = denominator
             else: #numerator and denominator may have already been inferred data; effectively the user has now passed in *two* sets of data
+                # pytorch
                 self._set_numerator(np.logaddexp(self.numerator.real, numerator.real),
                                     np.logaddexp(self.numerator.imag, numerator.imag))
                 self.denominator = np.logaddexp(self.denominator, denominator)
@@ -192,18 +198,26 @@ class Model(object):
                 template = load(template)
             assert type(template) == Nifti, 'template must be a Nifti object or a path to a Nifti object'
             bo = Brain(template)
+            # pytorch
             rbf_weights = _log_rbf(bo.get_locs(), self.locs, width=self.rbf_width)
+            # pytorch
             Z = self.get_model(z_transform=True)
+            # pytorch
             Zp = _zero_pad_corrmat(Z, self.locs, locs)
+            # pytorch
             self.numerator, self.denominator = _blur_corrmat(Z, Zp,
                     rbf_weights, self.gpu)
             self.locs = bo.get_locs()
         elif not (locs is None): #blur correlation matrix out to locs
             if (isinstance(data, Brain) or isinstance(data, Model)): #self.locs may now conflict with locs
                 if not ((locs.shape[0] == self.locs.shape[0]) and np.allclose(locs, self.locs)):
+                    # pytorch
                     rbf_weights = _log_rbf(locs, self.locs, width=self.rbf_width)
+                    # pytorch
                     Z = self.get_model(z_transform=True)
+                    # pytorch
                     Zp = _zero_pad_corrmat(Z, self.locs, locs)
+                    # pytorch
                     self.numerator, self.denominator = _blur_corrmat(Z, Zp,
                             rbf_weights, self.gpu)
                     self.locs = locs
@@ -214,7 +228,9 @@ class Model(object):
 
         #sort locations and force them to be unique
         self.locs, loc_inds = _unique(self.locs)
+        # pytorch
         self.numerator = self.numerator[loc_inds, :][:, loc_inds]
+        # pytorch
         self.denominator = self.denominator[loc_inds, :][:, loc_inds]
         self.n_locs = self.locs.shape[0]
 
@@ -238,7 +254,9 @@ class Model(object):
         if (self.numerator is None) or (self.denominator is None):
             m = np.eye(self.n_locs)
         else:
+            # pytorch
             m = _recover_model(self.numerator, self.denominator, z_transform=z_transform)
+            # pytorch
             m[np.isnan(m)] = 0
         return m
 
@@ -261,7 +279,9 @@ class Model(object):
         if _empty(self.locs):
             self.locs = new_locs
             if not _empty(new_locs):
+                # pytorch
                 self.numerator = np.log(self.zeros([new_locs.shape[0], new_locs.shape[0]], dtype=np.complex128))
+                # pytorch
                 self.denominator = np.zeros_like(self.numerator, dtype=np.float64)
                 self.locs = new_locs
                 self.n_locs = new_locs.shape[0]
@@ -270,7 +290,9 @@ class Model(object):
             if not force_include_bo_locs:
                 self.locs = pd.DataFrame(columns=('x', 'y', 'z'))
                 self.n_locs = 0
+                # pytorch
                 self.numerator = np.array([], dtype=np.complex128)
+                # pytorch
                 self.denominator = np.array([], dtype=np.float64)
             return
 
@@ -280,19 +302,27 @@ class Model(object):
             inds = _count_overlapping(new_locs, self.get_locs())
             self.locs = self.locs.iloc[inds, :]
             self.n_locs = self.locs.shape[0]
+            # pytorch
             self.numerator = self.numerator[inds, :][:, inds]
+            # pytorch
             self.denominator = self.denominator[inds, :][:, inds]
             return
         else:
+            # pytorch
             rbf_weights = _log_rbf(new_locs, self.get_locs())
+            # pytorch
             Z = self.get_model(z_transform=True)
+            # pytorch
             Zp = _zero_pad_corrmat(Z, self.locs, new_locs)
+            # pytorch
             self.numerator, self.denominator = _blur_corrmat(Z, Zp,
                     rbf_weights, self.gpu)
             self.locs = new_locs
 
         self.locs, loc_inds = _unique(self.locs)
+        # pytorch
         self.numerator = self.numerator[loc_inds, :][:, loc_inds]
+        # pytorch
         self.denominator = self.denominator[loc_inds, :][:, loc_inds]
         self.n_locs = self.locs.shape[0]
 
@@ -351,6 +381,7 @@ class Model(object):
 
         # if True will update the model with subject's correlation matrix
         if force_update:
+            # pytorch
             mo = self.update(bor, inplace=False)
         else:
             mo = self
@@ -358,6 +389,7 @@ class Model(object):
         #blur out model to include brain object locations
         mo.set_locs(bor.get_locs(), force_include_bo_locs=force_include_bo_locs)
 
+        # pytorch
         activations = _timeseries_recon(bor, mo, preprocess=preprocess, recon_loc_inds=recon_loc_inds)
 
         if not recon_loc_inds:
@@ -370,7 +402,6 @@ class Model(object):
 
         return Brain(data=activations, locs=recon_loc, sessions=bor.sessions, sample_rate=bor.sample_rate,
                          label=loc_labels.tolist(), filter=None)
-
 
     def update(self, data, inplace=True):
         """
@@ -401,12 +432,16 @@ class Model(object):
         m1.set_locs(locs)
         m2.set_locs(locs)
 
+        # pytorch
         m1._set_numerator(np.logaddexp(m1.numerator.real, m2.numerator.real),
                           np.logaddexp(m1.numerator.imag, m2.numerator.imag))
         #simplify to ensure that each entry of the numerator has either a non-zero real part OR a non-zero imag part
         #(or neither).
+        # pytorch
         n = _to_log_complex(_to_exp_real(m1.numerator))
+        # pytorch
         m1._set_numerator(n.real, n.imag)
+        # pytorch
         m1.denominator = np.logaddexp(m1.denominator, m2.denominator)
         m1.locs = locs
         m1.n_locs = locs.shape[0]
@@ -427,8 +462,11 @@ class Model(object):
         """
         Internal function for setting the numerator (deals with size mismatches)
         """
+        # pytorch
         self.numerator = np.zeros_like(n_real, dtype=np.complex128)
+        # pytorch
         self.numerator.real = n_real
+        # pytorch
         self.numerator.imag = n_imag
 
 
@@ -462,14 +500,18 @@ class Model(object):
             An axes object
         """
 
+        # pytorch
         corr_mat = self.get_model(z_transform=False)
 
+        # pytorch
         if np.shape(corr_mat)[0] < 2000:
+            # pytorch
             ax = sns.heatmap(corr_mat, cbar_kws = {'label': 'correlation'}, **kwargs)
         else:
             if savefile == None:
                 raise NotImplementedError('Cannot plot large models when savefile is None')
             else:
+                # pytorch
                 ax = _plot_borderless(corr_mat, savefile=savefile, vmin=-1, vmax=1, cmap='Spectral')
         if show:
             plt.show()
@@ -540,7 +582,10 @@ class Model(object):
             If True, indexes in place.
 
         """
+
+        # pytorch
         numerator = self.numerator[loc_inds][:, loc_inds]
+        # pytorch
         denominator = self.denominator[loc_inds][:, loc_inds]
         locs = self.locs.iloc[loc_inds]
         n_subs = self.n_subs
@@ -601,13 +646,17 @@ class Model(object):
 
         warnings.warn('solution unstable')
 
-
+        # pytorch
         m1_z = m1.n_subs * m1.get_model(z_transform=True)
+        # pytorch
         m2_z = m2.n_subs * m2.get_model(z_transform=True)
 
+        # pytorch
         m2_z[np.where(np.isnan(m2_z))] = 0
+        # pytorch
         np.fill_diagonal(m2_z, 1)
 
+        # pytorch
         return Model(data=_z2r(np.divide(np.subtract(m1_z,m2_z), (m1.n_subs-m2.n_subs))),
                      locs=locs, n_subs=m1.n_subs - m2.n_subs, meta=meta, rbf_width=m1.rbf_width)
 
@@ -644,10 +693,14 @@ def _create_locs(self, locs, template):
 
 def _bo2model(bo, locs, width=20):
     """Returns numerator and denominator given a brain object"""
+    # pytorch
     sub_corrmat = _get_corrmat(bo)
     #np.fill_diagonal(sub_corrmat, 0)
+    # pytorch
     sub_corrmat_z = _r2z(sub_corrmat)
+    # pytorch
     sub_rbf_weights = _log_rbf(locs, bo.get_locs(), width=width)
+    # pytorch
     n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
     return n, d, 1
 
@@ -657,46 +710,62 @@ def _mo2model(mo, locs, width=20):
     if not isinstance(locs, pd.DataFrame):
         locs = pd.DataFrame(locs, columns=['x', 'y', 'z'])
     if locs.equals(mo.locs):
+        # pytorch
         return mo.numerator.copy(), mo.denominator.copy(), mo.n_subs
     else:
         # if the locations are not equivalent, map input model into locs space
+        # pytorch
         sub_corrmat_z = _recover_model(mo.numerator, mo.denominator, z_transform=True)
         #np.fill_diagonal(sub_corrmat_z, 0)
+        # pytorch
         sub_rbf_weights = _log_rbf(locs, mo.locs, width=width)
+        # pytorch
         n, d = _blur_corrmat(sub_corrmat_z, sub_rbf_weights)
         return n, d, mo.n_subs
 
 def _force_update(mo, bo, width=20):
     # get subject-specific correlation matrix
+    # pytorch
     sub_corrmat = _get_corrmat(bo)
 
     # fill diag with zeros
     #np.fill_diagonal(sub_corrmat, 0) # <- possible failpoint
 
     # z-score the corrmat
+    # pytorch
     sub_corrmat_z = _r2z(sub_corrmat)
 
     # get _rbf weights
+    # pytorch
     sub__rbf_weights = _log_rbf(mo.locs, bo.get_locs(), width=width)
 
     #  get subject expanded correlation matrix
+    # pytorch
     num_corrmat_x, denom_corrmat_x = _blur_corrmat(sub_corrmat_z, sub__rbf_weights)
 
     # add in new subj data
     #with np.errstate(invalid='ignore'):
+    # pytorch
     n = mo.numerator.copy()
+    # pytorch
     n.real = np.logaddexp(n.real, num_corrmat_x.real)
+    # pytorch
     n.imag = np.logaddexp(n.imag, num_corrmat_x.imag)
+    # pytorch
     return _recover_model(n, np.logaddexp(mo.denominator, denom_corrmat_x), z_transform=True)
 
 def _recover_model(num, denom, z_transform=False):
     warnings.simplefilter('ignore')
 
+    # pytorch
     m = np.divide(_to_exp_real(num), np.exp(denom)) #numerator and denominator are in log units
     if z_transform:
+        # pytorch
         np.fill_diagonal(m, np.inf)
         return m
     else:
+        # pytorch
         m = _z2r(m)
+        # pytorch
         np.fill_diagonal(m, 1)
         return m

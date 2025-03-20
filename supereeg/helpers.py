@@ -14,6 +14,7 @@ import numpy.matlib as mat
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import torch
 import imageio
 import nibabel as nib
 import hypertools as hyp
@@ -262,7 +263,6 @@ def _z_score(bo):
     return _apply_by_file_index(bo, z_score_xform, vstack_aggregrate)
 
 
-
 def _z2r(z):
     """
     Function that calculates the inverse Fisher z-transformation
@@ -280,15 +280,15 @@ def _z2r(z):
     """
     warnings.simplefilter('ignore')
     if isinstance(z, list):
-        z = np.array(z)
-    r = (np.exp(2 * z) - 1) / (np.exp(2 * z) + 1)
-    if isinstance(r, np.ndarray):
-        r[np.isinf(z) & (z > 0)] = 1
-        r[np.isinf(z) & (z < 0)] = -1
+        z = torch.tensor(z)
+    r = (torch.exp(2 * z) - 1) / (torch.exp(2 * z) + 1)
+    if torch.is_tensor(r):
+        r[torch.isinf(z) & (z > 0)] = 1
+        r[torch.isinf(z) & (z < 0)] = -1
     else:
-        if np.isinf(z) & (z > 0):
+        if torch.isinf(z) & (z > 0):
             return 1
-        elif np.isinf(z) & (z < 0):
+        elif torch.isinf(z) & (z < 0):
             return -1
     return r
 
@@ -308,7 +308,7 @@ def _r2z(r):
 
     """
     warnings.simplefilter('ignore')
-    return 0.5 * (np.log(1 + r) - np.log(1 - r))
+    return 0.5 * (torch.log(1 + r) - torch.log(1 - r))
 
 
 def _log_rbf(to_coords, from_coords, width=20):
@@ -365,6 +365,7 @@ def tal2mni(r):
     inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
     return np.round(inpoints[0:3, :].T, decimals=2)
+
 
 def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
     import cupy as cp
@@ -429,7 +430,7 @@ def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
 
     return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
 
-
+# pytorch
 def _blur_corrmat(Z, Zp, weights, gpu):
     """
     Gets full correlation matrix
@@ -511,7 +512,7 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
     Expand a subject's correlation matrix to the full electrode locations by
     zero padding (currently) unknown correlations.  This function helps
-    vectorize _blurr_corrmat's model expansion.
+    vectorize _blur_corrmat's model expansion.
 
     Parameters
     ----------
@@ -528,11 +529,11 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
     full_locs = pd.DataFrame(_full_locs, columns=list('xyz'))
     n = full_locs.shape[0]
-    Z_padded = np.zeros([n, n])
+    Z_padded = torch.zeros(n, n)
     idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
-    known_idxs = idxs['index_x'].values
-    locs_idxs = idxs['index_y'].values
-    Z_padded[np.ix_(known_idxs, known_idxs)] = Z[np.ix_(locs_idxs, locs_idxs)]
+    known_idxs = torch.tensor(idxs['index_x'].values)
+    locs_idxs = torch.tensor(idxs['index_y'].values)
+    Z_padded[torch.meshgrid(known_idxs, known_idxs)] = Z[torch.meshgrid(locs_idxs, locs_idxs)]
     return Z_padded
 
 
@@ -551,14 +552,14 @@ def _to_log_complex(X):
     """
     warnings.simplefilter('ignore')
 
-    signX = np.sign(X)
+    signX = torch.sign(X)
 
-    posX = np.log(np.multiply(signX > 0, X))
-    posX[np.isnan(posX)] = 0
+    posX = torch.log(torch.mul(signX > 0, X))
+    posX[torch.isnan(posX)] = 0
 
-    negX = np.log(np.abs(np.multiply(signX < 0, X)))
-    negX = np.multiply(0 + 1j, negX)
-    negX.real[np.isnan(negX.real)] = 0
+    negX = torch.log(torch.abs(torch.mul(signX < 0, X)))
+    negX = torch.mul(0 + 1j, negX)
+    negX.real[torch.isnan(negX.real)] = 0
 
     return posX + negX
 
@@ -566,9 +567,9 @@ def _to_exp_real(C):
     """
     Inverse of _to_log_complex
     """
-    posX = np.exp(C.real)
-    if np.any(np.iscomplex(C)):
-        negX = np.exp(C.imag)
+    posX = torch.exp(C.real)
+    if torch.any(torch.is_complex(C)):
+        negX = torch.exp(C.imag)
         return posX - negX
     else:
         return posX
@@ -605,7 +606,7 @@ def _fill_upper_triangle(M, value):
     np.fill_diagonal(upper_tri, value)
     return upper_tri
 
-
+# pytorch
 def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_inds=None):
     """
     Reconstruction done by chunking by session
@@ -1740,7 +1741,6 @@ def _brain_to_nifti2(bo, nii_template): #FIXME: this is incredibly inefficient; 
         data = data.reshape(-1, order='F').reshape(data.shape)
 
     return Nifti2(data, affine=S)
-
 
 
 def _plot_borderless(x, savefile=None, vmin=-1, vmax=1, width=1000, dpi=100, cmap='Spectral'):
