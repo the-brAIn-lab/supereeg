@@ -245,12 +245,12 @@ def _get_corrmat(bo):
         return p + n
 
     def zcorr_xform(bo):
-        return np.multiply(bo.dur, _r2z(1 - squareform(pdist(bo.get_data().T, 'correlation'))))
+        return torch.mul(torch.tensor(bo.dur), _r2z(torch.tensor(1 - squareform(pdist(bo.get_data().T, 'correlation')))))
 
     summed_zcorrs = _apply_by_file_index(bo, zcorr_xform, aggregate)
 
     #weight each session by recording time
-    return _z2r(summed_zcorrs / np.sum(bo.dur))
+    return _z2r(summed_zcorrs / torch.sum(torch.tensor(bo.dur)))
 
 
 def _z_score(bo):
@@ -296,7 +296,7 @@ def _z2r(z):
     if isinstance(z, list):
         z = torch.tensor(z)
     r = (torch.exp(2 * z) - 1) / (torch.exp(2 * z) + 1)
-    if torch.is_tensor(r):
+    if isinstance(r, torch.Tensor):
         r[torch.isinf(z) & (z > 0)] = 1
         r[torch.isinf(z) & (z < 0)] = -1
     else:
@@ -471,7 +471,9 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     #if gpu:
     #    return _blur_corrmat_cupy(Z, Zp, weights)
 
-    triu_inds = torch.triu_indices(Z.shape[0], offset=1)
+    weights = torch.tensor(weights)
+
+    triu_inds = np.triu_indices(Z.shape[0],k=1)
 
     #need to do computations separately for positive and negative values
     sign_Z_full = torch.sign(Z)
@@ -480,15 +482,15 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     logZ_neg = torch.log(torch.mul(sign_Z < 0, torch.abs(Z[triu_inds])))
 
     n = weights.shape[0]
-    wtx, wty = torch.triu_indices(n, offset=1)
-    ktx, kty = torch.triu_indices(Z.shape[0], offset=1)
+    wtx, wty = np.triu_indices(n, k=1)
+    ktx, kty = np.triu_indices(Z.shape[0], k=1)
     n_kt = len(ktx)
 
     K_pos = torch.zeros(n, n)
     K_neg = torch.zeros(n, n)
     W = torch.zeros(n, n)
 
-    wclose = torch.isclose(weights, 0).sum(axis=1)
+    wclose = torch.isclose(weights, torch.zeros_like(weights)).sum(axis=1)
     matches = torch.triu(torch.outer(wclose, wclose)).to(bool)
 
     for x, y in zip(wtx, wty):
@@ -521,7 +523,7 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     K_neg.real[torch.isnan(K_neg)] = 0
     K = K_pos + K_neg
 
-    return K + K.t, W + W.t
+    return K + K.T, W + W.T
 
 def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
@@ -544,7 +546,7 @@ def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
     full_locs = pd.DataFrame(_full_locs, columns=list('xyz'))
     n = full_locs.shape[0]
-    Z_padded = torch.zeros(n, n)
+    Z_padded = torch.zeros(n, n, dtype=Z.dtype)
     idxs = full_locs.reset_index().merge(locs.reset_index(), on=list('xyz'))
     known_idxs = torch.tensor(idxs['index_x'].values)
     locs_idxs = torch.tensor(idxs['index_y'].values)
@@ -583,7 +585,7 @@ def _to_exp_real(C):
     Inverse of _to_log_complex
     """
     posX = torch.exp(C.real)
-    if torch.any(torch.is_complex(C)):
+    if torch.is_complex(C):
         negX = torch.exp(C.imag)
         return posX - negX
     else:
@@ -604,14 +606,14 @@ def _logsubexp(x,y):
     z : Numpy array
         Returns log complex array of x-y
     """
-    if np.any(np.iscomplex(y)):
+    if torch.any(torch.iscomplex(y)):
         y = _to_exp_real(y)
     else:
-        y = np.exp(y)
+        y = torch.exp(y)
     sub_log = _to_log_complex(x)
     neg_y_log = _to_log_complex(-y)
-    sub_log.real = np.logaddexp(x.real, neg_y_log.real)
-    sub_log.imag = np.logaddexp(x.imag, neg_y_log.imag)
+    sub_log.real = torch.logaddexp(x.real, neg_y_log.real)
+    sub_log.imag = torch.logaddexp(x.imag, neg_y_log.imag)
     return sub_log
 
 
@@ -678,6 +680,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
         rbf_weights = _log_rbf(combined_locs, mo.get_locs())
 
         from .model import _recover_model #deferred import to remove circular dependency
+        """THIS LOOKS LIKE A BUG"""
         Z = _recover_model(*_blur_corrmat(Z, rbf_weights, mo.gpu), z_transform=True)
 
 

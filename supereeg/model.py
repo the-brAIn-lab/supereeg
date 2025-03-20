@@ -164,6 +164,13 @@ class Model(object):
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
 
                 self.locs = locs
+                self.numerator = _to_log_complex(_r2z(torch.tensor(data)))
+                self.denominator = torch.zeros_like(self.numerator, dtype=torch.float32)
+            elif isinstance(data, torch.Tensor):
+                assert not (locs is None), 'must specify model locations'
+                assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
+
+                self.locs = locs
                 self.numerator = _to_log_complex(_r2z(data))
                 self.denominator = torch.zeros_like(self.numerator, dtype=torch.float32)
 
@@ -608,7 +615,7 @@ class Model(object):
         m2_z = m2.n_subs * m2.get_model(z_transform=True)
 
         m2_z[torch.where(torch.isnan(m2_z))] = 0
-        m2_z.fill_diagonal(1)
+        m2_z.fill_diagonal_(1)
 
         return Model(data=_z2r(torch.div(torch.sub(m1_z,m2_z), (m1.n_subs-m2.n_subs))),
                      locs=locs, n_subs=m1.n_subs - m2.n_subs, meta=meta, rbf_width=m1.rbf_width)
@@ -696,9 +703,9 @@ def _recover_model(num, denom, z_transform=False):
 
     m = torch.div(_to_exp_real(num), torch.exp(denom)) #numerator and denominator are in log units
     if z_transform:
-        m.fill_diagonal(torch.inf)
+        m.fill_diagonal_(torch.inf)
         return m
     else:
         m = _z2r(m)
-        m.fill_diagonal(1)
+        m.fill_diagonal_(1)
         return m
