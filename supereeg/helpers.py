@@ -582,9 +582,10 @@ def _to_log_complex(X):
 
     negX = torch.log(torch.abs(torch.mul(signX < 0, X)))
     negX = torch.mul(0 + 1j, negX)
-    negX.real[torch.isnan(negX.real)] = 0
+    negX.imag[torch.isnan(negX.imag)] = 0
 
-    return posX + negX
+    negX.real = posX
+    return negX
 
 def _to_exp_real(C):
     """
