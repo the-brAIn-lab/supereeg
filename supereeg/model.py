@@ -151,7 +151,6 @@ class Model(object):
                 self.locs = data.locs
                 self.meta = data.meta
                 self.n_subs = data.n_subs
-                print(data)
                 self.numerator = data.numerator
                 self.rbf_width = data.rbf_width
                 #self = copy.deepcopy(data)
@@ -165,7 +164,9 @@ class Model(object):
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
 
                 self.locs = locs
-                self.numerator = _to_log_complex(_r2z(torch.tensor(data, dtype=torch.float64)))
+                print(torch.tensor(_r2z(data), dtype=torch.float64))
+                self.numerator = _to_log_complex(torch.tensor(_r2z(data), dtype=torch.float64))
+                print(self.numerator)
                 self.denominator = torch.zeros_like(self.numerator, dtype=torch.float32)
             elif isinstance(data, torch.Tensor):
                 assert not (locs is None), 'must specify model locations'
@@ -248,7 +249,6 @@ class Model(object):
         if (self.numerator is None) or (self.denominator is None):
             m = np.eye(self.n_locs)
         else:
-            print(f'num:{self.numerator}')
             m = _recover_model(self.numerator, self.denominator, z_transform=z_transform)
             m[torch.isnan(m)] = 0
         return m
