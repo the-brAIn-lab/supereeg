@@ -151,6 +151,7 @@ class Model(object):
                 self.locs = data.locs
                 self.meta = data.meta
                 self.n_subs = data.n_subs
+                print(data)
                 self.numerator = data.numerator
                 self.rbf_width = data.rbf_width
                 #self = copy.deepcopy(data)
@@ -247,6 +248,7 @@ class Model(object):
         if (self.numerator is None) or (self.denominator is None):
             m = np.eye(self.n_locs)
         else:
+            print(f'num:{self.numerator}')
             m = _recover_model(self.numerator, self.denominator, z_transform=z_transform)
             m[torch.isnan(m)] = 0
         return m
