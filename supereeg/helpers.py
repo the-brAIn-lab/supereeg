@@ -9,6 +9,7 @@ from __future__ import print_function
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
 import copy
+import glob
 import os
 import numpy.matlib as mat
 import matplotlib.pyplot as plt
@@ -1639,14 +1640,9 @@ def _brain_to_nifti(bo, nii_template, antialiasing=False): #FIXME: this is incre
                     data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :],
                     counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
     else:
-        if len(Y.shape) <= 2:
-            for i in range(R.shape[0]):
-                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2],:] += Y[i] # for plot.py if not working change to Y[i] or Y[:, i]
-                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2],:] += 1
-        else:
-            for i in range(R.shape[0]):
-                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += Y[:, i] 
-                counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += 1
+        for i in range(R.shape[0]):
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += Y[:, i] 
+            counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += 1
 
         with np.errstate(invalid='ignore'):
             if len(Y.shape) <= 2:
@@ -1859,3 +1855,43 @@ def _close_all():
     figs = plt.get_fignums()
     for f in figs:
         plt.close(f)
+
+# After running pipeline pull all correlation and location data into a numpy array
+def _get_corr(results_path):
+    within_files = glob.glob(os.path.join(results_path, "*within*"))
+    all_files = glob.glob(os.path.join(results_path, "*"))
+    across_files = [f for f in all_files if "within" not in os.path.basename(f)]
+
+    within_data = np.zeros(len(within_files))
+    within_locs = np.zeros((len(within_files),3))
+    for i in range(len(within_files)):
+        load = np.load(within_files[i])
+        if len(load["corrs"]) == 1:
+            within_data[i] = load["corrs"].item()
+            within_locs[i] = load["coord"]
+    
+
+    within_mean = np.mean(within_data)
+    within_median = np.median(within_data)
+    within_std = np.std(within_data)
+    within_var = np.var(within_data)
+
+
+    across_data = np.zeros(len(across_files))
+    across_locs = np.zeros((len(across_files),3))
+    for i in range(len(across_files)):
+        load = np.load(across_files[i])
+        if len(load["corrs"]) == 1:
+            across_data[i] = load["corrs"].item()
+            across_locs[i] = load["coord"] 
+
+    across_mean = np.mean(across_data)
+    across_median = np.median(across_data)
+    across_std = np.std(across_data)
+    across_var = np.var(across_data)
+
+    data_corr = {"within_corr": within_data, "within_locs":within_locs ,"across_corr":across_data, "across_locs":across_locs}
+    data_stats = {"within_mean":within_mean,"within_median":within_median,"within_std":within_std,"within_var":within_var,
+                  "across_mean":across_mean,"across_median":across_median,"across_std":across_std,"across_var":across_var}
+    
+    return data_corr, data_stats
