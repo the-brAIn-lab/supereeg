@@ -1,6 +1,7 @@
-name: supereeg_env
+name: supereeg_env_test2
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - python
   - pip
@@ -12,6 +13,7 @@ dependencies:
     - torch --index-url https://download.pytorch.org/whl/cu126
     - torchvision --index-url https://download.pytorch.org/whl/cu126
     - gpytorch
+    - fury
   - scikit-learn
   - scikit-image
   - pandas
@@ -24,3 +26,4 @@ dependencies:
   - sh
   - notebook
   - cupy
+  - dipy
