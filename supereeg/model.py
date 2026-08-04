@@ -66,6 +66,13 @@ class Model(object):
         to {'stable':False} after subtraction performed.
     date created : str
         Time created
+    apply_motif : boolean
+        default is false, allows the model to know if there will be different motifs
+        that can be included into the model. If true user needs to provide path of motif 
+        correlation matrix in motif_matrix_paths.
+    motif_matrix_paths : String Array
+        (optional) If using multiple motifs will hold the location of motif correlation matrix to use in
+        get_model function.
     save : None
         Optional filename to save created model
 
@@ -88,7 +95,7 @@ class Model(object):
     def __init__(self, data=None, locs=None, template=None, gpu=False,
                  numerator=None, denominator=None, kernal=None,rbf_width=None,
                  density_parms=None,radi=None,n_subs=None, meta=None,date_created=None, 
-                 save=None):
+                 apply_motif=False,motif_matrix_paths=None,save=None):
         from .load import load
 
         self.locs = None
@@ -96,6 +103,8 @@ class Model(object):
         self.denominator = None
         self.gpu = gpu
         self.n_subs = 0
+        self.apply_motif = apply_motif
+        self.motif_matrix_paths = motif_matrix_paths
 
         self.kernal = kernal
         if kernal == "stationary" :
@@ -155,12 +164,13 @@ class Model(object):
                         
 
                     self.__init__(data=data[0], locs=locs, template=template, meta=self.meta, kernal=self.kernal,
-                                  rbf_width=self.rbf_width,density_parms=self.density_parms,n_subs=1, gpu=self.gpu,radi=self.radi)
+                                  rbf_width=self.rbf_width,density_parms=self.density_parms,n_subs=1, gpu=self.gpu,
+                                  radi=self.radi,apply_motif=self.apply_motif,motif_matrix_paths=self.motif_matrix_paths)
 
                     for i in range(1, len(data)):
                         self.update(Model(data=data[i], locs=locs, template=template, meta=self.meta,
-                                          kernal=self.kernal,rbf_width=self.rbf_width,density_parms=self.density_parms,
-                                          n_subs=1,gpu=self.gpu,radi=self.radi))
+                                          kernal=self.kernal,rbf_width=self.rbf_width,density_parms=self.density_parms,n_subs=1,
+                                          gpu=self.gpu,radi=self.radi,apply_motif=self.apply_motif,motif_matrix_paths=self.motif_matrix_paths))
 
             if isinstance(data, six.string_types):
                 data = load(data)
@@ -180,12 +190,14 @@ class Model(object):
                 self.rbf_width = data.rbf_width
                 self.density_parms= data.density_parms
                 self.radi=data.radi
+                self.apply_motif=data.apply_motif
+                self.motif_matrix_paths=data.motif_matrix_paths
                 #self = copy.deepcopy(data)
                 n_subs = self.n_subs
             elif isinstance(data, Brain):
                 corrmat = _get_corrmat(data)
-                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1,kernal=self.kernal,
-                        gpu=self.gpu,rbf_width=self.rbf_width,density_parms=self.density_parms,radi=self.radi)
+                self.__init__(data=corrmat, locs=data.get_locs(), n_subs=1,kernal=self.kernal,gpu=self.gpu,rbf_width=self.rbf_width,
+                              density_parms=self.density_parms,radi=self.radi,apply_motif=self.apply_motif,motif_matrix_paths=self.motif_matrix_paths)
             elif isinstance(data, np.ndarray):
                 assert not (locs is None), 'must specify model locations'
                 assert locs.shape[0] == data.shape[0], 'number of locations must match the size of the given correlation matrix'
@@ -225,7 +237,7 @@ class Model(object):
             elif self.kernal == "density":
                 rbf_weights, radi = _log_density_rbf(bo.get_locs(),self.locs,self.density_parms["n_neighbors"],self.density_parms["tau"],
                                                      self.density_parms["sigma"],self.density_parms["max"])
-            Z = self.get_model(z_transform=True)
+            Z = self.get_model(z_transform=True, apply_motif=self.apply_motif)
             Zp = _zero_pad_corrmat(Z, self.locs, locs)
             self.numerator, self.denominator = _blur_corrmat(Z, Zp,
                     rbf_weights, self.gpu)
@@ -238,7 +250,7 @@ class Model(object):
                     elif self.kernal == "density":
                         rbf_weights, radi = _log_density_rbf(locs,self.locs,self.density_parms["n_neighbors"],self.density_parms["tau"],
                                                        self.density_parms["sigma"],self.density_parms["max"])
-                    Z = self.get_model(z_transform=True)
+                    Z = self.get_model(z_transform=True,apply_motif=self.apply_motif)
                     Zp = _zero_pad_corrmat(Z, self.locs, locs)
                     self.numerator, self.denominator = _blur_corrmat(Z, Zp,
                             rbf_weights, self.gpu)
@@ -269,14 +281,21 @@ class Model(object):
             else:
                 warnings.warn('bad filename, cannot save to disk: ' + str(save))
 
-    def get_model(self, z_transform=False):
+    def get_model(self, z_transform=False, apply_motif=False):
+
         """ Returns a copy of the model in the form of a correlation matrix"""
         if (self.numerator is None) or (self.denominator is None):
             m = np.eye(self.n_locs)
         else:
             m = _recover_model(self.numerator, self.denominator, z_transform=z_transform)
+            if apply_motif:
+                combined_corr_motif = _get_motif_corr_matrix(self.motif_matrix_paths)
+                if combined_corr_motif.shape == m.shape:
+                    m += combined_corr_motif
+                else:
+                    raise ValueError(f"Mismatched matrix shape (correlation matrix shape={m.shape}, motif matrix shape={combined_corr_motif.shape}")
             m[np.isnan(m)] = 0
-        return m
+        return m 
 
     def get_locs(self):
         """ Returns the locations in the model
@@ -320,7 +339,11 @@ class Model(object):
             self.denominator = self.denominator[inds, :][:, inds]
             return
         else:
-            rbf_weights = _log_rbf(new_locs, self.get_locs())
+            if self.kernal == "stationary":
+                rbf_weights = _log_rbf(new_locs, self.get_locs(),self.rbf_width)
+            elif self.kernal == "density":
+                rbf_weights, radi = _log_density_rbf(new_locs, self.get_locs(), self.density_parms["n_neighbors"],self.density_parms["tau"]
+                                            ,self.density_parms["sigma"],self.density_parms["max"])
             Z = self.get_model(z_transform=True)
             Zp = _zero_pad_corrmat(Z, self.locs, new_locs)
             self.numerator, self.denominator = _blur_corrmat(Z, Zp,
@@ -447,6 +470,8 @@ class Model(object):
         m1.locs = locs
         m1.n_locs = locs.shape[0]
         m1.n_subs += m2.n_subs
+        m1.apply_motif = m2.apply_motif
+        m1.motif_matrix_paths = m2.motif_matrix_paths
 
         #combine meta info
         if not ((m1.meta is None) and (m2.meta is None)):
@@ -482,6 +507,9 @@ class Model(object):
             print('Kernal Type: ' + self.kernal + " with parameters of " + str(self.density_parms))
         print('Date created: ' + str(self.date_created))
         print('Meta data: ' + str(self.meta))
+        print('Different Motif Applied: ' + str(self.apply_motif))
+        if self.apply_motif:
+            print('Correlation Matrix of different Motif located in\n'+ str(self.motif_matrix_paths))
 
     def plot_data(self, savefile=None, show=True, **kwargs):
         """
@@ -558,7 +586,9 @@ class Model(object):
             'kernal' : self.kernal,
             'rbf_width' : self.rbf_width,
             'density_parms' : self.density_parms,
-            'radi' : self.radi
+            'radi' : self.radi,
+            'apply_motif' : self.apply_motif,
+            'motif_matrix_paths' : self.motif_matrix_paths
         }
 
         if fname[-3:]!='.mo':
@@ -758,3 +788,10 @@ def _recover_model(num, denom, z_transform=False):
         m = _z2r(m)
         np.fill_diagonal(m, 1)
         return m
+
+def _get_motif_corr_matrix(motif_matrix_paths):
+    combined_corr_matrix = np.array([1])
+    for i in range(len(motif_matrix_paths)):
+        combined_corr_matrix = combined_corr_matrix * np.load(motif_matrix_paths[i])
+
+    return np.log(combined_corr_matrix)

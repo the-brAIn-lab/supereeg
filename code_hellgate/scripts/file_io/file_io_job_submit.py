@@ -131,7 +131,7 @@ if (socket.gethostname() == 'josecsOmarchy'):
 
 
 else:
-    max_jobs = 15
+    max_jobs = 30
     runnin_jobs = 0
     job_manager = slurmjobmanager.SlurmJobManager(max_jobs=max_jobs, user="jc158347",error_log_file="fileio_errors.log")
 

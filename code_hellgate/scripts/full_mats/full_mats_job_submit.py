@@ -15,6 +15,7 @@ import sys
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 kernal = sys.argv[1]
 kernal_parms = sys.argv[2]
+apply_motif = sys.argv[3]
 
 try:
     os.stat(config['resultsdir'])
@@ -40,7 +41,7 @@ files = [os.path.join(config['datadir'], x) for x in completed-fcompleted]
 
 
 
-job_commands = list(map(lambda x: x[0] + ' ' + str(x[1]) + " " + kernal + " " +kernal_parms, zip([job_script]*len(files), files)))
+job_commands = list(map(lambda x: x[0] + ' ' + str(x[1]) + " " + kernal + " " + kernal_parms + " " + apply_motif, zip([job_script]*len(files), files)))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
 
@@ -132,7 +133,7 @@ try:
 except:
     os.makedirs(config['startdir'])
 
-max_jobs = 15
+max_jobs = 30
 
 if (socket.gethostname() == 'josecsOmarchy'):
     locks = list()
@@ -180,7 +181,7 @@ if (socket.gethostname() != 'josecsOmarchy'):
     # Wait for all jobs to finish 
     runnin_jobs = job_manager.count_active_jobs()
     job_manager = slurmjobmanager.SlurmJobManager(max_jobs=max_jobs, user="jc158347",error_log_file="fullmats_errors.log")
-    while runnin_jobs >= 1:
+    while runnin_jobs >= 2:
         jobs = job_manager.get_running_jobs()
         runnin_jobs = job_manager.count_active_jobs()
 

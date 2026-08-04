@@ -12,12 +12,14 @@ if (socket.gethostname() == 'josecsOmarchy'):
     config['workingdir'] = '/home/josecs/Desktop/supereeg_env/full_mats'
     config['startdir'] = '/home/josecs/Desktop/supereeg_env'  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
+    config['motif_matrix'] = '/home/josecs/Desktop/supereeg_env' #CHANGE TO CORRECT PATH
 else:
     config["pyFR_locs"] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/pyFR_locs'
     config['datadir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/bo'
     config['workingdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats'
     config['startdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
+    config['motif_matrix'] = '/mnt/beegfs/projects/brAIn_lab/datasets/eeg/Berezutskaya_data/fmri_corr'
 
 # job creation options
 config['scriptdir'] = os.path.join(config['workingdir'], 'scripts')

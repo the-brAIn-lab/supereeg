@@ -6,10 +6,12 @@ import time
 from config import config
 from bandbrain import BandBrain
 import json
+import ast
 
 fname_var = sys.argv[1]
 kernal = sys.argv[2]
 params = sys.argv[3]
+apply_motif = ast.literal_eval(sys.argv[4])
 
 # Remove curly braces and split by comma
 content = params.strip('{}')
@@ -105,11 +107,26 @@ if elec_count > 1:
     # turn it back into a vanilla Brain
     bo = se.Brain(bo)
 
-    # make model
-    if kernal == "stationary":
-        mo = se.Model(bo, locs=R, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
-    elif kernal == "density":
-        mo = se.Model(bo, locs=R, kernal=kernal,density_parms=kernal_parms)
+    motif_matrix_paths = []
+    if apply_motif:
+        sub = fname_var.split("/")[-1].split("_")[0]
+        matrix_path = config["motif_matrix"]+f"/correlation_matrix_{sub}_task-film.npy"
+        if os.path.isfile(matrix_path):
+            motif_matrix_paths.append(matrix_path)
+            if kernal == "stationary":
+                mo = se.Model(bo, locs=R, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]),apply_motif=apply_motif,motif_matrix_paths=motif_matrix_paths)
+            elif kernal == "density":
+                mo = se.Model(bo, locs=R, kernal=kernal,density_parms=kernal_parms,apply_motif=apply_motif,motif_matrix_paths=motif_matrix_paths)
+        else:
+            if kernal == "stationary":
+                mo = se.Model(bo, locs=R, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
+            elif kernal == "density":
+                mo = se.Model(bo, locs=R, kernal=kernal,density_parms=kernal_parms)
+    else:
+        if kernal == "stationary":
+            mo = se.Model(bo, locs=R, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
+        elif kernal == "density":
+            mo = se.Model(bo, locs=R, kernal=kernal,density_parms=kernal_parms)
 
     # save model
     mo.save(os.path.join(results_dir, fname))

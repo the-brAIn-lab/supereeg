@@ -1,0 +1,2 @@
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/ave_mats/scripts/model_0.sh]
+Submitted batch job 2223487

@@ -1,3 +1,0 @@
-sbatch: error: Invalid user for SlurmUser slurm, ignored
-sbatch: fatal: Unable to process configuration file
-num of remaining jobs: 5298

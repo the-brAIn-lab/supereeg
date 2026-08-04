@@ -13,9 +13,9 @@
 
 #SBATCH --nodes=1
 
-#SBATCH --cpus-per-task=5
+#SBATCH --cpus-per-task=10
 
-#SBATCH --mem-per-cpu=15gb
+#SBATCH --mem-per-cpu=20gb
 
 #SBATCH --mail-user=jose.carmona-sanchez@umconnect.umt.edu
 

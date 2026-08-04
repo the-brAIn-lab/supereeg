@@ -111,6 +111,7 @@ print('bo indexed')
 # recon_outfile_within = os.path.join(results_dir, os.path.basename(sys.argv[1][:-3] + '_' + sys.argv[2] + '_within.npz'))
 
 if not os.path.exists(recon_outfile_across):
+
     bo_r = mo_s.predict(bo, recon_loc_inds=e_ind)
 
     print(bo_r.get_locs())

@@ -13,7 +13,7 @@ if (socket.gethostname() == 'josecsOmarchy'):
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
     # '/mnt/beegfs/projects/lo243677e/brAIn_lab/data/ecog/RAM'
-    config['datadir'] = '/mnt/beegfs/projects/lo243677e/brAIn_lab/data/ecog/RAM'
+    config['datadir'] = '/mnt/beegfs/projects/brAIn_lab/datasets/eeg/Berezutskaya_data'
     config['workingdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/bo'
     config['startdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
@@ -33,3 +33,4 @@ config['walltime'] = '02:00:00'  # maximum runtime, in h:MM:SS
 config['cmd_wrapper'] = "python"  # replace with actual command wrapper (e.g. matlab, python, etc.)
 config['modules'] = "(\"python/3.13\")"  # separate each module with a space and enclose in (escaped) double quotes
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
+
