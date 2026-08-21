@@ -57,6 +57,7 @@ if freq == 'raw':
 
 print(len(mos))
 
+# added code for fmri mean motif make sure to take off
 if kernal == "stationary":
     mo = se.Model(mos, n_subs=len(mos),kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
 elif kernal == "density":

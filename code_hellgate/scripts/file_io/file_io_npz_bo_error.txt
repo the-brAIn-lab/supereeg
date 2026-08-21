@@ -8,26 +8,17 @@
   from nilearn.input_data import NiftiMasker
 /mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
   from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
-/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
-  from nilearn.input_data import NiftiMasker
+Traceback (most recent call last):
+  File "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io.py", line 34, in <module>
+    bo = npz2bo(fname)
+  File "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io.py", line 23, in npz2bo
+    locs = tal2mni(f['R'])
+  File "/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py", line 430, in tal2mni
+    inpoints[:, tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
+                       ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/scipy/linalg/_basic.py", line 268, in solve
+    raise ValueError(f"incompatible shapes: {a1.shape=} and {b1.shape=}")
+ValueError: incompatible shapes: a1.shape=(4, 4) and b1.shape=(68, 90053)
 /mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.
   from nilearn.input_data import NiftiMasker
 /mnt/beegfs/hellgate/home/jc158347/.conda/envs/supereeg_env/lib/python3.13/site-packages/supereeg/helpers.py:30: FutureWarning: The import path 'nilearn.input_data' is deprecated in version 0.9. Importing from 'nilearn.input_data' will be possible at least until release 0.13.0. Please import from 'nilearn.maskers' instead.

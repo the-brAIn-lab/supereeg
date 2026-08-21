@@ -5,21 +5,22 @@ import time
 import numpy as np
 import os
 import json
+import main_config
 
-if (socket.gethostname() == 'josecsOmarchy'):
-    supereeg_env = "/home/josecs/Desktop/supereeg_env"
-    fileIO_jobsubmit_path = "/home/josecs/miniconda3/envs/supereeg_env/supereeg_JCS/code_hellgate/scripts/file_io/file_io_job_submit.py"
-    pyFR_jobsubmit_path = "/home/josecs/miniconda3/envs/supereeg_env/supereeg_JCS/code_hellgate/scripts/pyFR_locs/union_locs_job_submit.py"
-    fullmats_jobsubmit_path = "/home/josecs/miniconda3/envs/supereeg_env/supereeg_JCS/code_hellgate/scripts/full_mats/full_mats_job_submit.py"
-    avemats_jobsubmit_path = "/home/josecs/miniconda3/envs/supereeg_env/supereeg_JCS/code_hellgate/scripts/ave_mats/ave_mats_job_submit.py"
-    reacon_jobsubmit_path = "/home/josecs/miniconda3/envs/supereeg_env/supereeg_JCS/code_hellgate/scripts/recon/recon_job_submit.py"
+if (socket.gethostname() == main_config['local_computer']):
+    supereeg_env = main_config["main"]
+    fileIO_jobsubmit_path = main_config["scripts"]+"/file_io/file_io_job_submit.py"
+    pyFR_jobsubmit_path = main_config["scripts"]+"/pyFR_locs/union_locs_job_submit.py"
+    fullmats_jobsubmit_path = main_config["scripts"]+"/full_mats/full_mats_job_submit.py"
+    avemats_jobsubmit_path = main_config["scripts"]+"/ave_mats/ave_mats_job_submit.py"
+    reacon_jobsubmit_path = main_config["scripts"]+"/recon/recon_job_submit.py"
 else:
-    supereeg_env = "/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env"
-    fileIO_jobsubmit_path = "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io_job_submit.py"
-    pyFR_jobsubmit_path = "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pyFR_locs/union_locs_job_submit.py"
-    fullmats_jobsubmit_path = "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/full_mats/full_mats_job_submit.py"
-    avemats_jobsubmit_path = "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/ave_mats/ave_mats_job_submit.py"
-    reacon_jobsubmit_path = "/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/recon/recon_job_submit.py"
+    supereeg_env = main_config["main"]
+    fileIO_jobsubmit_path = main_config["scripts"]+"/file_io/file_io_job_submit.py"
+    pyFR_jobsubmit_path = main_config["scripts"]+"/pyFR_locs/union_locs_job_submit.py"
+    fullmats_jobsubmit_path = main_config["scripts"]+"/full_mats/full_mats_job_submit.py"
+    avemats_jobsubmit_path = main_config["scripts"]+"/ave_mats/ave_mats_job_submit.py"
+    reacon_jobsubmit_path = main_config["scripts"]+"/recon/recon_job_submit.py"
 
 run = sh.Command('python')
 

@@ -1,21 +1,26 @@
 import os
 import socket
+import sys
+
+# Attach main_config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import main_config
 
 config = dict()
 
 config['template'] = 'run_job.sh'
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
-if (socket.gethostname() == 'josecsOmarchy'):
-    config['datadir'] = '/home/josecs/Desktop/supereeg_env/bo'
-    config['workingdir'] = '/home/josecs/Desktop/supereeg_env/pyFR_locs'
+if (socket.gethostname() == main_config['local_computer']):
+    config['datadir'] = main_config["main"]+'/bo'
+    config['workingdir'] = main_config["main"]+'/pyFR_locs'
     config['startdir'] = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # directory to start the job in
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 
 else:
-    config['datadir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/bo'
-    config['workingdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/pyFR_locs'
-    config['startdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env'
+    config['datadir'] = main_config["main"]+'/bo'
+    config['workingdir'] = main_config["main"]+'/pyFR_locs'
+    config['startdir'] = main_config["main"]
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
 
 # job creation options

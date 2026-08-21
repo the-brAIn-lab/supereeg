@@ -1,22 +1,27 @@
 import os
 import socket
+import sys
+
+# Attach main_config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import main_config
 
 config = dict()
 
 config['template'] = 'run_job.sh'
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
-if (socket.gethostname() == 'josecsOmarchy'):
-    config['datadir'] = '/home/josecs/Desktop/supereeg_env/bo'
-    config['workingdir'] = '/home/josecs/Desktop/supereeg_env/recon'
-    config['startdir'] = '/home/josecs/Desktop/supereeg_env'  # directory to start the job in
-    config['modeldir'] = '/home/josecs/Desktop/supereeg_env/full_mats/results/union'
+if (socket.gethostname() == main_config['local_computer']):
+    config['datadir'] =  main_config["main"]+'/bo'
+    config['workingdir'] =  main_config["main"]+'/recon'
+    config['startdir'] =  main_config["main"]  # directory to start the job in
+    config['modeldir'] =  main_config["main"]+'/full_mats/results/union'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job_local.sh')
 else:
-    config['datadir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/bo'
-    config['workingdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/recon'
-    config['startdir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env'
-    config['modeldir'] = '/mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/results/union'
+    config['datadir'] =  main_config["main"]+'/bo'
+    config['workingdir'] =  main_config["main"]+'/recon'
+    config['startdir'] =  main_config["main"]  # directory to start the job in
+    config['modeldir'] =  main_config["main"]+'/full_mats/results/union'
     config['template'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'run_job.sh')
 
 # job creation options

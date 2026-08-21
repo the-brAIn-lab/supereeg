@@ -1,46 +1,30 @@
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-41_task-film_run-1_10003_SEeeg
+creating model object: sub-63_task-film_run-2_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-25_task-film_run-1_10003_SEeeg
+creating model object: sub-20_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-05_task-film_run-1_10003_SEeeg
+creating model object: sub-37_task-film_run-2_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-32_task-film_run-1_10003_SEeeg
+creating model object: sub-54_task-film_run-2_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-13_task-film_run-1_10003_SEeeg
+creating model object: sub-31_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-19_task-film_run-1_10003_SEeeg
+creating model object: sub-19_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-34_task-film_run-1_10003_SEeeg
+creating model object: sub-18_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-17_task-film_run-1_10003_SEeeg
+creating model object: sub-09_task-film_run-2_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-48_task-film_run-1_10003_SEeeg
+creating model object: sub-27_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-10_task-film_run-1_10003_SEeeg
+creating model object: sub-34_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-33_task-film_run-1_10003_SEeeg
+creating model object: sub-45_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-42_task-film_run-1_10003_SEeeg
+creating model object: sub-14_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-36_task-film_run-1_10003_SEeeg
+creating model object: sub-17_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-06_task-film_run-1_10003_SEeeg
+creating model object: sub-26_task-film_run-1_10002_2-blocks_SEeeg
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-20_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-01_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-39_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-37_task-film_run-2_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-21_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-49_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-03_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-58_task-film_run-1_10003_SEeeg
-{'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-creating model object: sub-23_task-film_run-1_10003_SEeeg
+creating model object: sub-60_task-film_run-1_10002_2-blocks_SEeeg
