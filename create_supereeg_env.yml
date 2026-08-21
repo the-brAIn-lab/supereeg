@@ -1,4 +1,4 @@
-name: supereeg_env_test2
+name: supereeg_env
 channels:
   - defaults
   - conda-forge
@@ -27,3 +27,4 @@ dependencies:
   - notebook
   - cupy
   - dipy
+  - mne
