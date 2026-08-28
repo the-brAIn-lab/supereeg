@@ -1,0 +1,209 @@
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x     y     z
+0 -58.81 -5.88  2.53
+x   -58.81
+y    -5.88
+z     2.53
+Name: 82, dtype: float64
+[0.95219042]
+       x     y     z
+0 -58.81 -5.88  2.53
+x   -58.81
+y    -5.88
+z     2.53
+Name: 82, dtype: float64
+[0.11644683]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+      x      y      z
+0 -4.26 -53.91  14.14
+x    -4.26
+y   -53.91
+z    14.14
+Name: 86, dtype: float64
+[0.70975083]
+      x      y      z
+0 -4.26 -53.91  14.14
+x    -4.26
+y   -53.91
+z    14.14
+Name: 86, dtype: float64
+[0.40685282]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x     y     z
+0 -60.83 -8.25  8.93
+x   -60.83
+y    -8.25
+z     8.93
+Name: 83, dtype: float64
+[0.96718862]
+       x     y     z
+0 -60.83 -8.25  8.93
+x   -60.83
+y    -8.25
+z     8.93
+Name: 83, dtype: float64
+[0.09700844]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x     y      z
+0 -62.85 -8.61  16.53
+x   -62.85
+y    -8.61
+z    16.53
+Name: 84, dtype: float64
+[0.96774394]
+       x     y      z
+0 -62.85 -8.61  16.53
+x   -62.85
+y    -8.61
+z    16.53
+Name: 84, dtype: float64
+[0.24661776]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x      y     z
+0 -19.41 -45.21  4.81
+x   -19.41
+y   -45.21
+z     4.81
+Name: 88, dtype: float64
+[0.75457989]
+       x      y     z
+0 -19.41 -45.21  4.81
+x   -19.41
+y   -45.21
+z     4.81
+Name: 88, dtype: float64
+[0.38902152]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+      x     y      z
+0 -3.25 -60.6  24.67
+x    -3.25
+y   -60.60
+z    24.67
+Name: 85, dtype: float64
+[0.72105927]
+      x     y      z
+0 -3.25 -60.6  24.67
+x    -3.25
+y   -60.60
+z    24.67
+Name: 85, dtype: float64
+[0.388583]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x      y     z
+0 -27.49 -40.88  0.68
+x   -27.49
+y   -40.88
+z     0.68
+Name: 89, dtype: float64
+[0.78847488]
+       x      y     z
+0 -27.49 -40.88  0.68
+x   -27.49
+y   -40.88
+z     0.68
+Name: 89, dtype: float64
+[0.39785904]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x      y     z
+0 -11.33 -49.53  8.93
+x   -11.33
+y   -49.53
+z     8.93
+Name: 87, dtype: float64
+[0.73670749]
+       x      y     z
+0 -11.33 -49.53  8.93
+x   -11.33
+y   -49.53
+z     8.93
+Name: 87, dtype: float64
+[0.40608639]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x      y     z
+0 -36.58 -36.56 -3.77
+x   -36.58
+y   -36.56
+z    -3.77
+Name: 90, dtype: float64
+[0.66906975]
+       x      y     z
+0 -36.58 -36.56 -3.77
+x   -36.58
+y   -36.56
+z    -3.77
+Name: 90, dtype: float64
+[0.34159804]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x      y     z
+0 -45.67 -30.54  0.14
+x   -45.67
+y   -30.54
+z     0.14
+Name: 92, dtype: float64
+[0.85800619]
+       x      y     z
+0 -45.67 -30.54  0.14
+x   -45.67
+y   -30.54
+z     0.14
+Name: 92, dtype: float64
+[0.28458666]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x      y     z
+0 -43.65 -33.52 -2.41
+x   -43.65
+y   -33.52
+z    -2.41
+Name: 91, dtype: float64
+[0.8109553]
+       x      y     z
+0 -43.65 -33.52 -2.41
+x   -43.65
+y   -33.52
+z    -2.41
+Name: 91, dtype: float64
+[0.26656062]

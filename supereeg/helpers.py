@@ -9,6 +9,7 @@ from __future__ import print_function
 #comprised of the xform applied to the brain object containing one session worth of data from the original object.
 
 import copy
+import glob
 import os
 import numpy.matlib as mat
 import matplotlib.pyplot as plt
@@ -34,10 +35,14 @@ from scipy.spatial.distance import squareform
 from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
+from scipy.sparse import csr_matrix
+
 try:
     from itertools import zip_longest
 except:
     from itertools import izip_longest as zip_longest
+
+from sklearn.neighbors import NearestNeighbors
 
 
 def _std(res=None):
@@ -311,7 +316,7 @@ def _r2z(r):
     return 0.5 * (np.log(1 + r) - np.log(1 - r))
 
 
-def _log_rbf(to_coords, from_coords, width=20):
+def _log_rbf(to_coords, from_coords, width):
     """
     Radial basis function
 
@@ -338,6 +343,67 @@ def _log_rbf(to_coords, from_coords, width=20):
     return weights
 
 
+def density(n_by_3_Locs, nearest_n, tau):
+    """
+        Calculates the density of the nearest n neighbors
+        Parameters
+        ----------
+        n_by_3_Locs : ndarray
+            Array of electrode locations - one for each row
+        nearest_n : int
+            Number of nearest neighbors to consider in density calculation
+        Returns
+        ----------
+        results : ndarray
+            Denisity for each electrode location
+        """
+    nbrs = NearestNeighbors(n_neighbors=nearest_n, algorithm='ball_tree').fit(n_by_3_Locs)
+    distances, indices = nbrs.kneighbors(n_by_3_Locs)
+    return np.exp(-tau*(distances.sum(axis=1)))
+
+def compute_radi(density,sigma,max):
+    radi = np.round(float(sigma)/(density+.0001))
+    radi = np.where(radi >= max,max,radi)
+    #radi = np.where(radi <= np.min(radi),1,radi) min seems to make model worse, needs more testing
+    return radi
+
+def get_radi(to_coords, from_coords,n_neighbors,tau,sigma,max):
+    n_neighbors = int(n_neighbors)
+    to_coords_den = density(to_coords,n_neighbors,tau=tau)
+    from_coords_den = density(from_coords,n_neighbors,tau=tau)
+
+    to_coords_radi = compute_radi(to_coords_den,sigma=sigma,max=max)
+    from_coords_radi = compute_radi(from_coords_den,sigma=sigma,max=max)
+
+    all_radi = (to_coords_radi[:, np.newaxis] + from_coords_radi[np.newaxis, :]) / 2
+    
+    return all_radi
+
+def _log_density_rbf(to_coords, from_coords, n_neighbors = 15,tau = .05,sigma = .01, max=5):
+    """
+    Radial basis function based on density of given locations
+
+    Parameters
+    ----------
+    to_coords : ndarray
+        Series of all coordinates (one per row) - R_full
+
+    c : ndarray
+        Series of subject's coordinates (one per row) - R_subj
+
+
+    Returns
+    ----------
+    results : ndarray
+        Matrix of log rbf weights for each subject coordinate for all coordinates
+
+    """
+    radi = get_radi(to_coords=to_coords,from_coords=from_coords,
+                    n_neighbors=n_neighbors,tau=tau,sigma=sigma,max=max)
+    weights = -cdist(to_coords, from_coords, metric='euclidean') ** 2 / radi
+    return weights, radi
+
+
 def tal2mni(r):
     """
     Convert coordinates (electrode locations) from Talairach to MNI space
@@ -359,12 +425,187 @@ def tal2mni(r):
     up = np.array([[0.9900, 0, 0, 0], [0, 0.9700, 0, 0], [0, 0, 0.9200, 0], [0, 0, 0, 1.0000]])
     down = np.array([[0.9900, 0, 0, 0], [0, 0.9700, 0, 0], [0, 0, 0.8400, 0], [0, 0, 0, 1.0000]])
 
-    inpoints = np.c_[r, np.ones(r.shape[0], dtype=np.float)].T
+    inpoints = np.c_[r, np.ones(r.shape[0], dtype=np.float64)].T
     tmp = inpoints[2, :] < 0
     inpoints[:, tmp] = linalg.solve(np.dot(rotmat, down), inpoints[:, tmp])
     inpoints[:, ~tmp] = linalg.solve(np.dot(rotmat, up), inpoints[:, ~tmp])
 
     return np.round(inpoints[0:3, :].T, decimals=2)
+
+
+'''def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024,apply_motif=False):
+    import cupy as cp
+    from .kernel import blur
+
+    blur = '#define BLOCKSIZE {0}'.format(block_size) + blur
+    blur_gpu = cp.RawKernel(blur, 'blur')
+    get_maxes = cp.RawKernel(blur, 'arrmax')
+    integrated = cp.RawKernel(blur, 'integrated')
+
+    Z = cp.asarray(Z, cp.float32)
+    Zp = cp.asarray(Zp, cp.float32)
+    weights = cp.asarray(weights, cp.float32)
+    n = weights.shape[0]
+    wtx, wty = np.triu_indices(n, k=1)
+    ktx, kty = np.triu_indices(Z.shape[0], k=1)
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
+    sign_Z_full = cp.sign(Z)
+    sign_Z = sign_Z_full[triu_inds]
+    lzp = cp.log(cp.multiply(sign_Z > 0, Z[triu_inds]))
+    lzn = cp.log(cp.multiply(sign_Z < 0, cp.abs(Z[triu_inds])))
+    wclose = cp.isclose(weights, 0).sum(axis=1)
+    wclose_h = cp.asnumpy(wclose)
+    matches = cp.triu(np.outer(wclose_h, wclose_h)).astype(bool)
+
+    n_wt = len(wtx)
+    n_kt = len(ktx)
+    w_n_rows = cp.int32(weights.shape[0])
+    w_n_cols = cp.int32(weights.shape[1])
+
+    w_gpu = cp.zeros(n_wt, np.float32)
+    kp_gpu = cp.zeros(n_wt, np.float32)
+    kn_gpu = cp.zeros(n_wt, np.float32)
+
+    wtx_gpu = cp.asarray(wtx, cp.int32)
+    wty_gpu = cp.asarray(wty, cp.int32)
+    ktx_gpu = cp.asarray(ktx, cp.int32)
+    kty_gpu = cp.asarray(kty, cp.int32)
+
+    maxes = cp.zeros(n_wt).astype(cp.float32)
+
+    block = (block_size, 1, 1)
+    num_blocks = np.int(np.ceil(n_wt / block_size))
+    grid = (n_wt, 1, 1)
+
+    get_maxes(grid, block, (weights, maxes, matches, wtx_gpu, wty_gpu, ktx_gpu, kty_gpu, w_n_rows, w_n_cols, n_kt))
+    blur_gpu(grid,block,(lzp, lzn, weights, Zp, wtx_gpu, wty_gpu, ktx_gpu, kty_gpu, kp_gpu, kn_gpu, w_gpu, maxes, w_n_rows, w_n_cols, n_kt))
+    # integrated(grid,block,(lzp,lzn,weights,Zp,wtx_gpu,wty_gpu,ktx_gpu,kty_gpu,kp_gpu,kn_gpu,w_gpu,matches,w_n_rows,w_n_cols,n_kt))
+
+    W  = cp.zeros([n, n])
+    W[wtx, wty] = w_gpu
+
+    K_pos = cp.zeros([n, n])
+    K_pos[wtx, wty] = kp_gpu
+
+    K_neg = cp.zeros([n, n])
+    K_neg[wtx, wty] = kn_gpu
+
+    K_neg = cp.multiply(0+1j, K_neg)
+    K_neg.real[cp.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    rfmri_corr = cp.load("/mnt/beegfs/projects/jc158347/supereeg_jcs/corr_matrix/mean_rfmri.npy")
+    #rfmri_corr[rfmri_corr == 0] = 1e-8
+    dwi_corr = cp.load("/mnt/beegfs/projects/jc158347/supereeg_jcs/corr_matrixDWI/norm_DWIcorr.npy")
+
+
+    main_weights = (K + K.T, W + W.T)
+
+    if apply_motif == True:
+        if main_weights[0].shape == rfmri_corr.shape:
+            results_num = main_weights[0] * rfmri_corr * dwi_corr
+            results_den = main_weights[1] * rfmri_corr * dwi_corr
+            return cp.asnumpy(results_num), cp.asnumpy(results_den)
+        else:
+            raise ValueError(f"Shape of model ({main_weights[0].shape}) does not match shape of motifs matrix ({rfmri_corr.shape})") 
+    else:
+        return cp.asnumpy(main_weights[0]),cp.asnumpy(main_weights[1])
+
+
+def _blur_corrmat(Z, Zp, weights, gpu, apply_motif=False):
+    """
+    Gets full correlation matrix
+
+    Parameters
+    ----------
+    Z : Numpy array
+        Subject's Fisher z-transformed correlation matrix
+
+    Zp : Numpy array, Subject's correlation matrix zero padded to the full
+               electrode locations
+
+    weights : Numpy array
+        Weights matrix calculated using _log_rbf function matrix
+
+    Returns
+    ----------
+    numerator : Numpy array
+        Numerator for the expanded correlation matrix
+    denominator : Numpy array
+        Denominator for the expanded correlation matrix
+    """
+    if gpu:
+        return _blur_corrmat_cupy(Z, Zp, weights, apply_motif=apply_motif)
+
+    triu_inds = np.triu_indices(Z.shape[0], k=1)
+
+    #need to do computations separately for positive and negative values
+    sign_Z_full = np.sign(Z)
+    sign_Z = sign_Z_full[triu_inds]
+    logZ_pos = np.log(np.multiply(sign_Z > 0, Z[triu_inds]))
+    logZ_neg = np.log(np.multiply(sign_Z < 0, np.abs(Z[triu_inds])))
+
+    weights = np.array(weights)
+    n = weights.shape[0]
+    wtx, wty = np.triu_indices(n, k=1)
+    ktx, kty = np.triu_indices(Z.shape[0], k=1)
+    n_kt = len(ktx)
+
+    K_pos = np.zeros([n, n])
+    K_neg = np.zeros([n, n])
+    W = np.zeros([n, n])
+
+    wclose = np.isclose(weights, 0).sum(axis=1)
+    matches = np.triu(np.outer(wclose, wclose)).astype(bool)
+
+    for x, y in zip(wtx, wty):
+        xweights = weights[x, :]
+        yweights = weights[y, :]
+
+        if matches[x,y]:
+            Z_match_val = Zp[x, y]
+            W[x, y] = 0.
+            if Z_match_val > 0:
+                K_pos[x, y] = np.log(Z_match_val)
+                K_neg[x, y] = -np.inf
+            else:
+                K_pos[x, y] = -np.inf
+                K_neg[x, y] = np.log(np.abs(Z_match_val))
+            continue
+
+        next_weights = xweights[ktx] + yweights[kty]
+        m = np.max(next_weights)
+        if not np.isfinite(m): m = 0
+        W[x, y] = np.log(np.sum(np.exp(next_weights - m))) + m
+        K_pos[x, y] = np.log(np.sum(np.exp(logZ_pos + next_weights - m))) + m
+        K_neg[x, y] = np.log(np.sum(np.exp(logZ_neg + next_weights - m))) + m
+
+
+    #turn K_neg into complex numbers.  Where K_neg is infinite, this results in nans for the real number parts, so we'll
+    #set any nans in K_neg.real to 0
+    #TODO: the next lines are redundant with code in _to_log_complex; consolidate
+    K_neg = np.multiply(0+1j, K_neg)
+    K_neg.real[np.isnan(K_neg)] = 0
+    K = K_pos + K_neg
+
+    rfmri_corr = np.load("/mnt/beegfs/projects/jc158347/supereeg_jcs/test_array.npy")
+    #rfmri_corr[rfmri_corr == 0] = 1e-8
+    dwi_corr = np.load("/mnt/beegfs/projects/jc158347/supereeg_jcs/test_array.npy")
+    #dwi_corr[dwi_corr == 0] = 1e-8
+
+    main_weights = (K + K.T, W + W.T)
+
+    if apply_motif == True:
+        if main_weights[0].shape == rfmri_corr.shape:
+            results_num = main_weights[0] + np.log(rfmri_corr) + np.log(dwi_corr)#
+            results_den = main_weights[1] 
+            return results_num, results_den
+        else:
+            raise ValueError(f"Shape of model ({main_weights[0].shape}) does not match shape of motifs matrix ({rfmri_corr.shape})")
+    else:
+        return main_weights[0],main_weights[1]'''
+    
+
 
 def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
     import cupy as cp
@@ -427,7 +668,8 @@ def _blur_corrmat_cupy(Z, Zp, weights, block_size=1024):
     K_neg.real[cp.isnan(K_neg)] = 0
     K = K_pos + K_neg
 
-    return cp.asnumpy(K + K.T), cp.asnumpy(W + W.T)
+    main_weights = (K + K.T, W + W.T)
+    return cp.asnumpy(main_weights[0]),cp.asnumpy(main_weights[1])
 
 
 def _blur_corrmat(Z, Zp, weights, gpu):
@@ -505,7 +747,8 @@ def _blur_corrmat(Z, Zp, weights, gpu):
     K_neg.real[np.isnan(K_neg)] = 0
     K = K_pos + K_neg
 
-    return K + K.T, W + W.T
+    main_weights = (K + K.T, W + W.T)
+    return main_weights[0],main_weights[1]
 
 def _zero_pad_corrmat(Z, locs, _full_locs):
     '''
@@ -692,8 +935,7 @@ def _timeseries_recon(bo, mo, chunk_size=25000, preprocess='zscore', recon_loc_i
                 print('issue with chunksize: ' + str(x))
     else:
         combined_data = np.zeros((data.shape[0], K.shape[0]), dtype=data.dtype)
-        combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),
-                                                            filter_chunks)))
+        combined_data[:, unknown_inds] = np.vstack(list(map(lambda x: _reconstruct_activity(data[x, :], Kba, Kaa_inv),filter_chunks)))
         combined_data[:, known_inds] = data
 
     for s in sessions:
@@ -940,7 +1182,7 @@ def _near_neighbor(bo, mo, match_threshold='auto'): #TODO: should this be part o
         nbo.locs.iloc[min_ind[0], :] = mo.locs.iloc[min_ind[1], :]
         d[min_ind[0]] = np.inf
         d[:, min_ind[1]] = np.inf
-    if not match_threshold in (0, none):
+    if not match_threshold in (0, None):
 
         if match_threshold == 'auto':
             v_size = _vox_size(mo.locs)
@@ -1426,7 +1668,7 @@ def _resample(bo, resample_rate=64):
         n_samples = np.round(np.shape(data)[0] * resample_rate / sample_rate).astype(int)
 
         # index for those samples
-        resample_index = np.round(np.linspace(data.index.min(), data.index.max(), n_samples))
+        resample_index = np.round(np.linspace(data.index.min(), data.index.max(), n_samples.item()))
 
         # resampled sessions
         re_session = session[resample_index]
@@ -1641,12 +1883,17 @@ def _brain_to_nifti(bo, nii_template, antialiasing=False): #FIXME: this is incre
                     counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
     else:
         for i in range(R.shape[0]):
-            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += Y[:, i]
+            data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += Y[:, i] 
             counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] += 1
 
         with np.errstate(invalid='ignore'):
-            for i in range(R.shape[0]):
-                data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :], counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
+            if len(Y.shape) <= 2:
+                for i in range(R.shape[0]):
+                    data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :], counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
+                data = np.mean(data,axis=3)
+            else:
+                for i in range(R.shape[0]):
+                    data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :] = np.divide(data[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :], counts[round_locs[i, 0], round_locs[i, 1], round_locs[i, 2], :])
 
     if bo.nifti_shape is not None:
         data = data.reshape(-1, order='F').reshape(data.shape)

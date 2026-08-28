@@ -1,0 +1,40 @@
+Running File_IO: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running File_IO: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 115.19579029083252 sec
+
+Running pyFR: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running pyFR: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 46.07427906990051 sec
+
+Running Full_Mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running Full_mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 3887.54616522789 sec
+
+Running Ave_mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running Ave_mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 576.2550210952759 sec
+
+Running Recon: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running Recon: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 16315.019057750702 sec
+
+Running File_IO: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running File_IO: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 96.97122049331665 sec
+
+Running pyFR: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running pyFR: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 21.254050493240356 sec
+
+Running Full_Mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running Full_mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 3043.2219789028168 sec
+
+Running Ave_mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running Ave_mats: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 499.20221972465515 sec
+
+Running Recon: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Done running Recon: kernal= density with parameters {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+Total run time 14304.82836651802 sec
+

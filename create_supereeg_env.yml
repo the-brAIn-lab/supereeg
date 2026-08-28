@@ -1,0 +1,30 @@
+name: supereeg_env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - pip:
+    - git+https://github.com/joseJCS0/supereeg_JCS.git
+    - nilearn
+    - future
+    - hypertools
+    - torch --index-url https://download.pytorch.org/whl/cu126
+    - torchvision --index-url https://download.pytorch.org/whl/cu126
+    - gpytorch
+    - fury
+  - scikit-learn
+  - scikit-image
+  - pandas
+  - seaborn
+  - matplotlib
+  - scipy
+  - imageio
+  - pytest
+  - pytables
+  - sh
+  - notebook
+  - cupy
+  - dipy
+  - mne
