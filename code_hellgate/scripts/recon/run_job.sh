@@ -5,11 +5,10 @@
 
 #SBATCH --job-name=recon
 
-#SBATCH --output=recon%A_%a.out
-#SBATCH --error=recon%A_%a.err
-
 #SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/recon/recon_log.txt
 #SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/recon/recon_error.txt
+
+#SBATCH --open-mode=append
 
 #SBATCH --nodes=1
 

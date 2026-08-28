@@ -5,11 +5,10 @@
 
 #SBATCH --job-name=compile_locs
 
-#SBATCH --output=compile_locs%A_%a.out
-#SBATCH --error=compile_locso%A_%a.err
+#SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pyFR_locs/pyFR_locs_log.txt
+#SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pyFR_locs/pyFR_locs_error.txt
 
-#SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pyFR_locs/compile_locs_log.txt
-#SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pyFR_locs/compile_locs_error.txt
+#SBATCH --open-mode=append
 
 #SBATCH --nodes=1
 

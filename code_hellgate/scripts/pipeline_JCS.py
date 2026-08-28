@@ -5,9 +5,9 @@ import time
 import numpy as np
 import os
 import json
-import main_config
+from main_config import main_config
 
-if (socket.gethostname() == main_config['local_computer']):
+if socket.gethostname() == main_config["local_computer"]:
     supereeg_env = main_config["main"]
     fileIO_jobsubmit_path = main_config["scripts"]+"/file_io/file_io_job_submit.py"
     pyFR_jobsubmit_path = main_config["scripts"]+"/pyFR_locs/union_locs_job_submit.py"

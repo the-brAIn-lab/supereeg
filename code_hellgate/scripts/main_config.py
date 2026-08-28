@@ -3,8 +3,10 @@ import socket
 
 main_config = dict()
 
-# change to the name to your own local machine
-main_config['local_computer'] = "josecsOmarchy"
+
+main_config["local_computer"] = 'josecsOmarchy' # change to the name to your own local machine
+main_config["cluster_user"] = 'jc158347' # Username used on hellgate cluster
+main_config["email"] = 'jose.carmona-sanchez@umconnect.umt.edu'
 
 # Change dirctory for both local machine and on the cluster
 if (socket.gethostname() == main_config['local_computer']):

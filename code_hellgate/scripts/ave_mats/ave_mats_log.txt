@@ -1,7 +1,5 @@
 {'n_neighbors': 15.0, 'tau': 0.05, 'sigma': 0.01, 'max': 5.0}
-48
-No Kernal given
-No Kernal given
+46
 No Kernal given
 No Kernal given
 No Kernal given

@@ -5,11 +5,10 @@
 
 #SBATCH --job-name=supereeg_pipeline
 
-#SBATCH --output=pipeline%A_%a.out
-#SBATCH --error=pipeline%A_%a.err
-
 #SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pipeline_log.txt
 #SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/pipeline_error.txt
+
+#SBATCH --open-mode=append
 
 #SBATCH --nodes=1
 

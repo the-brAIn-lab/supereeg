@@ -4,14 +4,14 @@ import sys
 
 # Attach main_config
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import main_config
+from main_config import main_config
 
 config = dict()
 
 config['template'] = 'run_job.sh'
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
-if (socket.gethostname() == main_config['local_computer']):
+if socket.gethostname() == main_config['local_computer']:
     config["pyFR_locs"] = main_config["main"]+'/pyFR_locs'
     config['datadir'] = main_config["main"]+'/bo'
     config['workingdir'] = main_config["main"]+'/full_mats'

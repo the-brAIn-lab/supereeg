@@ -5,11 +5,10 @@
 
 #SBATCH --job-name=file_io_npz_bo
 
-#SBATCH --output=file_io_npz_bo%A_%a.out
-#SBATCH --error=file_io_npz_bo%A_%a.err
+#SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io_log.txt
+#SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io_error.txt
 
-#SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io_npz_bo_log.txt
-#SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/file_io/file_io_npz_bo_error.txt
+#SBATCH --open-mode=append
 
 #SBATCH --nodes=1
 

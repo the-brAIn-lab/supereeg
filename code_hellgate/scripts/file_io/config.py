@@ -4,14 +4,14 @@ import sys
 
 # Attach main_config
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import main_config
+from main_config import main_config
 
 config = dict()
 
 config['template'] = 'run_job.sh'
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
-if (socket.gethostname() == main_config['local_computer']):
+if socket.gethostname() == main_config['local_computer']:
     config['datadir'] = main_config["starting_data"]
     config['workingdir'] = main_config["main"]+'/bo'
     config['startdir'] = main_config["main"]  # directory to start the job in

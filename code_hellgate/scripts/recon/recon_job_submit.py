@@ -15,6 +15,7 @@ import pandas as pd
 from supereeg.helpers import filter_subj as filtsub
 import numpy as np
 import slurmjobmanager as slurmjobmanager
+from main_config import main_config
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
 try:
@@ -158,7 +159,7 @@ except:
     os.makedirs(config['startdir'])
 
 
-if (socket.gethostname() == 'josecsOmarchy'):
+if (socket.gethostname() == main_config["local_computer"]):
 
     locks = list()
     for n, c in zip(job_names, job_commands):
@@ -179,7 +180,7 @@ if (socket.gethostname() == 'josecsOmarchy'):
 else:
     max_jobs = 25
     runnin_jobs = 0
-    job_manager = slurmjobmanager.SlurmJobManager(max_jobs=max_jobs, user="jc158347",error_log_file="recon_errors.log")
+    job_manager = slurmjobmanager.SlurmJobManager(max_jobs=max_jobs, user=main_config["cluster_user"],error_log_file="recon_errors.log")
 
     locks = list()
     for n, c in zip(job_names, job_commands):

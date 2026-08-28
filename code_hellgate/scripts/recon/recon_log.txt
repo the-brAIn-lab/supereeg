@@ -1,171 +1,209 @@
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
-{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
-models deleted
-filter applied
-bo indexed
-      x      y     z
-0 -24.5  18.36  4.41
-x   -24.50
-y    18.36
-z     4.41
-Name: 64, dtype: float64
-[-0.49604615]
-      x      y     z
-0 -24.5  18.36  4.41
-x   -24.50
-y    18.36
-z     4.41
-Name: 64, dtype: float64
-[0.1291968]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
        x     y     z
-0 -51.78  9.25  0.67
-x   -51.78
-y     9.25
-z     0.67
-Name: 60, dtype: float64
-[-0.45035998]
+0 -58.81 -5.88  2.53
+x   -58.81
+y    -5.88
+z     2.53
+Name: 82, dtype: float64
+[0.95219042]
        x     y     z
-0 -51.78  9.25  0.67
-x   -51.78
-y     9.25
-z     0.67
-Name: 60, dtype: float64
-[0.06084298]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+0 -58.81 -5.88  2.53
+x   -58.81
+y    -5.88
+z     2.53
+Name: 82, dtype: float64
+[0.11644683]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+      x      y      z
+0 -4.26 -53.91  14.14
+x    -4.26
+y   -53.91
+z    14.14
+Name: 86, dtype: float64
+[0.70975083]
+      x      y      z
+0 -4.26 -53.91  14.14
+x    -4.26
+y   -53.91
+z    14.14
+Name: 86, dtype: float64
+[0.40685282]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+       x     y     z
+0 -60.83 -8.25  8.93
+x   -60.83
+y    -8.25
+z     8.93
+Name: 83, dtype: float64
+[0.96718862]
+       x     y     z
+0 -60.83 -8.25  8.93
+x   -60.83
+y    -8.25
+z     8.93
+Name: 83, dtype: float64
+[0.09700844]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
        x     y      z
-0 -52.79 -3.93  17.39
-x   -52.79
-y    -3.93
-z    17.39
-Name: 62, dtype: float64
-[-0.9108232]
+0 -62.85 -8.61  16.53
+x   -62.85
+y    -8.61
+z    16.53
+Name: 84, dtype: float64
+[0.96774394]
        x     y      z
-0 -52.79 -3.93  17.39
-x   -52.79
-y    -3.93
-z    17.39
-Name: 62, dtype: float64
-[0.16504125]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+0 -62.85 -8.61  16.53
+x   -62.85
+y    -8.61
+z    16.53
+Name: 84, dtype: float64
+[0.24661776]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
        x      y     z
-0 -29.55  25.83 -0.69
-x   -29.55
-y    25.83
-z    -0.69
-Name: 65, dtype: float64
-[-0.50154265]
+0 -19.41 -45.21  4.81
+x   -19.41
+y   -45.21
+z     4.81
+Name: 88, dtype: float64
+[0.75457989]
        x      y     z
-0 -29.55  25.83 -0.69
-x   -29.55
-y    25.83
-z    -0.69
-Name: 65, dtype: float64
-[0.41286498]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+0 -19.41 -45.21  4.81
+x   -19.41
+y   -45.21
+z     4.81
+Name: 88, dtype: float64
+[0.38902152]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
+{'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
+models deleted
+filter applied
+bo indexed
+      x     y      z
+0 -3.25 -60.6  24.67
+x    -3.25
+y   -60.60
+z    24.67
+Name: 85, dtype: float64
+[0.72105927]
+      x     y      z
+0 -3.25 -60.6  24.67
+x    -3.25
+y   -60.60
+z    24.67
+Name: 85, dtype: float64
+[0.388583]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
        x      y     z
-0 -36.63  27.89 -0.57
-x   -36.63
-y    27.89
-z    -0.57
-Name: 66, dtype: float64
-[-0.42952914]
+0 -27.49 -40.88  0.68
+x   -27.49
+y   -40.88
+z     0.68
+Name: 89, dtype: float64
+[0.78847488]
        x      y     z
-0 -36.63  27.89 -0.57
-x   -36.63
-y    27.89
-z    -0.57
-Name: 66, dtype: float64
-[0.10653862]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+0 -27.49 -40.88  0.68
+x   -27.49
+y   -40.88
+z     0.68
+Name: 89, dtype: float64
+[0.39785904]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
        x      y     z
-0 -42.69  26.75  1.59
-x   -42.69
-y    26.75
-z     1.59
-Name: 67, dtype: float64
-[-0.37704883]
+0 -11.33 -49.53  8.93
+x   -11.33
+y   -49.53
+z     8.93
+Name: 87, dtype: float64
+[0.73670749]
        x      y     z
-0 -42.69  26.75  1.59
-x   -42.69
-y    26.75
-z     1.59
-Name: 67, dtype: float64
-[0.19822968]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+0 -11.33 -49.53  8.93
+x   -11.33
+y   -49.53
+z     8.93
+Name: 87, dtype: float64
+[0.40608639]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
-       x      y      z
-0 -50.77  16.25  27.16
-x   -50.77
-y    16.25
-z    27.16
-Name: 69, dtype: float64
-[-0.71579626]
-       x      y      z
-0 -50.77  16.25  27.16
-x   -50.77
-y    16.25
-z    27.16
-Name: 69, dtype: float64
-[0.31372697]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+       x      y     z
+0 -36.58 -36.56 -3.77
+x   -36.58
+y   -36.56
+z    -3.77
+Name: 90, dtype: float64
+[0.66906975]
+       x      y     z
+0 -36.58 -36.56 -3.77
+x   -36.58
+y   -36.56
+z    -3.77
+Name: 90, dtype: float64
+[0.34159804]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
-       x      y      z
-0 -48.75  27.88  21.24
-x   -48.75
-y    27.88
-z    21.24
-Name: 68, dtype: float64
-[-0.76719445]
-       x      y      z
-0 -48.75  27.88  21.24
-x   -48.75
-y    27.88
-z    21.24
-Name: 68, dtype: float64
-[0.21383717]
-sub-05_task-film_run-1_10002_6-blocks_SEeeg
+       x      y     z
+0 -45.67 -30.54  0.14
+x   -45.67
+y   -30.54
+z     0.14
+Name: 92, dtype: float64
+[0.85800619]
+       x      y     z
+0 -45.67 -30.54  0.14
+x   -45.67
+y   -30.54
+z     0.14
+Name: 92, dtype: float64
+[0.28458666]
+sub-34_task-film_run-1_10002_6-blocks_SEeeg
 {'n_neighbors': 15, 'tau': 0.05, 'sigma': 0.01, 'max': 5}
 models deleted
 filter applied
 bo indexed
-       x      y      z
-0 -52.79  14.91  33.62
-x   -52.79
-y    14.91
-z    33.62
-Name: 70, dtype: float64
-[-0.82466683]
-       x      y      z
-0 -52.79  14.91  33.62
-x   -52.79
-y    14.91
-z    33.62
-Name: 70, dtype: float64
-[0.09516737]
+       x      y     z
+0 -43.65 -33.52 -2.41
+x   -43.65
+y   -33.52
+z    -2.41
+Name: 91, dtype: float64
+[0.8109553]
+       x      y     z
+0 -43.65 -33.52 -2.41
+x   -43.65
+y   -33.52
+z    -2.41
+Name: 91, dtype: float64
+[0.26656062]

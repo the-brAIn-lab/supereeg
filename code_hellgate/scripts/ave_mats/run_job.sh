@@ -5,11 +5,10 @@
 
 #SBATCH --job-name=ave_mats
 
-#SBATCH --output=ave_mats%A_%a.out
-#SBATCH --error=ave_mats%A_%a.err
+#SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/ave_mats/ave_mats_log.txt
+#SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/ave_mats/ave_mats_error.txt
 
-#SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/ave_mats/avemats_log.txt
-#SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/ave_mats/avemats_error.txt
+#SBATCH --open-mode=append
 
 #SBATCH --nodes=1
 

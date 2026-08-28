@@ -10,6 +10,7 @@ import getpass
 import datetime as dt
 import sys
 import slurmjobmanager
+from main_config import main_config
 
 
 # ====== MODIFY ONLY THE CODE BETWEEN THESE LINES ======
@@ -117,7 +118,7 @@ try:
 except:
     os.makedirs(config['startdir'])
 
-if (socket.gethostname() == 'josecsOmarchy'):
+if (socket.gethostname() == main_config["local_computer"]):
     locks = list()
     for n, c in zip(job_names, job_commands):
         # if the submission script crashes before all jobs are submitted, the lockfile system ensures that only
@@ -146,7 +147,7 @@ else:
 
                 call(submit_command + " " + next_job, shell=True)
     # Wait for Job to finish
-    job_manager = slurmjobmanager.SlurmJobManager(max_jobs=10, user="jc158347",error_log_file="avemats_errors.log")
+    job_manager = slurmjobmanager.SlurmJobManager(max_jobs=10, user=main_config["cluster_user"],error_log_file="avemats_errors.log")
     runnin_jobs = job_manager.count_active_jobs()
     jobs = job_manager.get_running_jobs()
     while runnin_jobs >= 2:

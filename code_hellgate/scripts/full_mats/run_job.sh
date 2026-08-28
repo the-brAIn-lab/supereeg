@@ -5,11 +5,10 @@
 
 #SBATCH --job-name=full_mats
 
-#SBATCH --output=full_mats%A_%a.out
-#SBATCH --error=full_mats%A_%a.err
-
 #SBATCH --output=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/full_mats/full_mats_log.txt
 #SBATCH --error=/mnt/beegfs/projects/jc158347/supereeg_jcs/scripts/full_mats/full_mats_error.txt
+
+#SBATCH --open-mode=append
 
 #SBATCH --nodes=1
 
