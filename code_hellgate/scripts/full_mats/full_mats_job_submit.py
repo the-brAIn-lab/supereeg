@@ -186,6 +186,13 @@ if (socket.gethostname() != main_config["local_computer"]):
         jobs = job_manager.get_running_jobs()
         runnin_jobs = job_manager.count_active_jobs()
 
+    runnin_jobs = job_manager.count_active_jobs()
+    if runnin_jobs == 1:
+        pass
+    else:
+        while runnin_jobs >= 2:
+            runnin_jobs = job_manager.count_active_jobs()
+
 # all jobs have been submitted; release all locks
 for l in locks:
     release(l)

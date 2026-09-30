@@ -24,12 +24,19 @@ else:
 
 run = sh.Command('python')
 
+# This the file which compiles pipeline output stats and stores it in csv_file
+pipeline_output_py = "/mnt/beegfs/projects/jc158347/supereeg_jcs/test_code/result_output_analysis.py"
+
 ### Change code below to adjust analysis ######
 # default parameters for density kernal: {'n_neighbors' : 15, 'tau' : 0.05, 'sigma': 0.01, 'max':5}
 # default parameters for stationary kernal: {'rbf_width': 20}
-kernal = "density"
+kernal = "stationary"
 apply_motif = ["False","True"]
-parms = [{'n_neighbors' : 15, 'tau' : 0.05, 'sigma': 0.01, 'max':5},{'n_neighbors' : 15, 'tau' : 0.05, 'sigma': 0.01, 'max':5}]
+parms = [{'rbf_width': 5},{'rbf_width': 5}]
+# This the file which compiles pipeline output stats and stores it in csv_file
+pipeline_output_py = "/mnt/beegfs/projects/jc158347/supereeg_jcs/test_code/result_output_analysis.py"
+csv_file = "/mnt/beegfs/projects/jc158347/supereeg_jcs/pipeline_output_stats.csv"
+run_type = f"kernal-{kernal}_data-berk_task-rest"
 #############################################
 
 for i in range(len(parms)):
@@ -79,7 +86,7 @@ for i in range(len(parms)):
 
     print(f"Running Recon: kernal="+ " "+kernal+" with parameters "+str(parms[i]))
     start_time_recon = time.time()
-    run(reacon_jobsubmit_path, kernal,f"'''{parms[i]}'''")
+    run(reacon_jobsubmit_path, kernal,f"'''{parms[i]}'''",apply_motif[i])
     end_time_recon = time.time()
     elapsed_time_recon = end_time_recon - start_time_recon
     print(f"Done running Recon: kernal="+ " "+kernal+" with parameters "+str(parms[i]))
@@ -88,6 +95,10 @@ for i in range(len(parms)):
     run_time = np.array([elapsed_time_fileIO,elapsed_time_pyFR,elapsed_time_fullmats,elapsed_time_avemats,elapsed_time_recon])
     #run_time = np.array([elapsed_time_recon])
     np.savez(supereeg_env+"/Total_Run_Time.npz",run_time)
+
+    #Compile pipeline stats
+    run_type = run_type+f"_{apply_motif[i]}Motif"
+    run(pipeline_output_py,run_type,csv_file,supereeg_env,kernal)
 
     new_name = supereeg_env + "_"+ kernal+"_"+str(parms[i])+"_motif"+apply_motif[i]
     os.rename(supereeg_env, new_name)

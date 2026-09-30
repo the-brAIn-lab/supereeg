@@ -1,12 +1,14 @@
 
 import supereeg as se
-from supereeg.helpers import _corr_column, get_rows, known_unknown, remove_electrode
+from supereeg.helpers import _corr_column, get_rows, known_unknown, remove_electrode,_get_fmri_corr_matrix
 import numpy as np
 import sys
 import os
 from config import config
 from bandbrain import BandBrain
 import json
+import ast
+from pathlib import Path
 bo_fname = sys.argv[1]
 
 freq = bo_fname.split('_')[-1].split('.bo')[0]
@@ -27,6 +29,7 @@ model_template = sys.argv[3]
 
 kernal = sys.argv[4]
 params = sys.argv[5]
+apply_motif = ast.literal_eval(sys.argv[6])
 
 # Remove curly braces and split by comma
 content = params.strip('{}')
@@ -127,10 +130,34 @@ else:
 
 if not os.path.exists(recon_outfile_within):
 
-    if kernal == "stationary":
-        Model = se.Model(bo, locs=R_K_subj, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
-    elif kernal == "density":
-        Model = se.Model(bo, locs=R_K_subj, kernal=kernal,density_parms=kernal_parms)
+    if apply_motif:
+        base_dir = "/mnt/beegfs/projects/brAIn_lab/datasets/eeg/Berezutskaya_data"
+        corr_holder = "/mnt/beegfs/projects/brAIn_lab/datasets/eeg/Berezutskaya_data/fmri_corr_holder"
+        motif_matrix_paths = [corr_holder+"/motif_correlation.npy"]
+        sub = file_name.split("_")[0]
+        task= file_name.split("_")[1]+"_"+file_name.split("_")[2]
+        file_dir = base_dir+"/"+ sub + f'/ses-mri3t/func/{sub}_ses-mri3t_{task}_bold.nii.gz'
+        if Path(file_dir).is_file():
+            if kernal == "stationary":
+                Model = se.Model(bo, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
+            elif kernal == "density":
+                Model = se.Model(bo, kernal=kernal,density_parms=kernal_parms)
+            correlation_matrix = _get_fmri_corr_matrix(Model.get_locs().to_numpy(),file_dir)
+            np.save(motif_matrix_paths[0],correlation_matrix)
+            if kernal == "stationary":
+                Model = se.Model(bo, locs=R_K_subj, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]),apply_motif=apply_motif,motif_matrix_paths=motif_matrix_paths)
+            elif kernal == "density":
+                Model = se.Model(bo, locs=R_K_subj, kernal=kernal,density_parms=kernal_parms,apply_motif=apply_motif,motif_matrix_paths=motif_matrix_paths)
+        else:
+            if kernal == "stationary":
+                Model = se.Model(bo, locs=R_K_subj, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
+            elif kernal == "density":
+                Model = se.Model(bo, locs=R_K_subj, kernal=kernal,density_parms=kernal_parms)
+    else:
+        if kernal == "stationary":
+            Model = se.Model(bo, locs=R_K_subj, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
+        elif kernal == "density":
+            Model = se.Model(bo, locs=R_K_subj, kernal=kernal,density_parms=kernal_parms)
 
     m_locs = Model.get_locs().values
     known_inds, unknown_inds, e_ind = known_unknown(m_locs, R_K_removed, m_locs, elec_ind)
