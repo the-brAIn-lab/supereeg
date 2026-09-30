@@ -110,7 +110,8 @@ if elec_count > 1:
     motif_matrix_paths = []
     if apply_motif:
         sub = fname_var.split("/")[-1].split("_")[0]
-        matrix_path = config["motif_matrix"]+f"/correlation_matrix_{sub}_task-film.npy"
+        task = fname_var.split("/")[-1].split("_")[1]
+        matrix_path = config["motif_matrix"]+f"/correlation_matrix_{sub}_{task}.npy"
         if os.path.isfile(matrix_path):
             motif_matrix_paths.append(matrix_path)
             if kernal == "stationary":
@@ -118,6 +119,7 @@ if elec_count > 1:
             elif kernal == "density":
                 mo = se.Model(bo, locs=R, kernal=kernal,density_parms=kernal_parms,apply_motif=apply_motif,motif_matrix_paths=motif_matrix_paths)
         else:
+            print(f"{sub}_{task} has no proper motif correlation matrix reverting back to default no motif model")
             if kernal == "stationary":
                 mo = se.Model(bo, locs=R, kernal=kernal,rbf_width=float(kernal_parms["rbf_width"]))
             elif kernal == "density":

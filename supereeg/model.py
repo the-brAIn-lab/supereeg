@@ -66,13 +66,6 @@ class Model(object):
         to {'stable':False} after subtraction performed.
     date created : str
         Time created
-    apply_motif : boolean
-        default is false, allows the model to know if there will be different motifs
-        that can be included into the model. If true user needs to provide path of motif 
-        correlation matrix in motif_matrix_paths.
-    motif_matrix_paths : String Array
-        (optional) If using multiple motifs will hold the location of motif correlation matrix to use in
-        get_model function.
     save : None
         Optional filename to save created model
 

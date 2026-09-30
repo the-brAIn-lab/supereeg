@@ -36,6 +36,8 @@ from scipy.special import logsumexp
 from scipy import linalg
 from scipy.ndimage.interpolation import zoom
 from scipy.sparse import csr_matrix
+from nilearn.maskers import NiftiSpheresMasker
+from nilearn.connectome import ConnectivityMeasure
 
 try:
     from itertools import zip_longest
@@ -2097,3 +2099,42 @@ def _close_all():
     figs = plt.get_fignums()
     for f in figs:
         plt.close(f)
+
+
+def _get_fmri_corr_matrix(locs,fmri_nii,radius_addition=0):
+    radius = 1
+    ready = False
+
+    while not ready:
+        try:
+            masker = NiftiSpheresMasker(
+            seeds=locs,         
+            radius=radius,   
+            detrend=True,
+            standardize="zscore_sample",
+            allow_overlap=True
+            )  
+
+            time_series = masker.fit_transform(fmri_nii)
+            ready = True
+
+            if ready:
+                masker = NiftiSpheresMasker(
+                seeds=locs,         
+                radius=radius+radius_addition,   
+                detrend=True,
+                standardize="zscore_sample",
+                allow_overlap=True
+                )  
+
+                time_series = masker.fit_transform(fmri_nii)
+        except:
+            radius += 1
+
+    correlation_measure = ConnectivityMeasure(kind='correlation',standardize='zscore_sample')
+
+    correlation_matrix = correlation_measure.fit_transform([time_series])[0]
+
+    return correlation_matrix
+
+

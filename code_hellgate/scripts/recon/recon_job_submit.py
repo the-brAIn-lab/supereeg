@@ -63,8 +63,9 @@ model = str('pyFR_union')
 
 kernal = sys.argv[1]
 kernal_parms = sys.argv[2]
+apply_motif = sys.argv[3]
 
-job_commands = list(map(lambda x: x[0]+ " " +str(x[1][0])+ " " +str(x[1][1])+ " " + model + " " + kernal+" "+kernal_parms, zip([job_script]* len(file_nums), file_nums)))
+job_commands = list(map(lambda x: x[0]+ " " +str(x[1][0])+ " " +str(x[1][1])+ " " +model + " " +kernal+" "+kernal_parms+" "+apply_motif, zip([job_script]* len(file_nums), file_nums)))
 
 # job_names should specify the file name of each script (as a list, of the same length as job_commands)
 job_names = list(map(lambda x: os.path.splitext(os.path.basename(x[0]))[0]+"_"+str(x[1])+"_" + model+ "_" + kernal + '.sh', file_nums))
@@ -178,7 +179,7 @@ if (socket.gethostname() == main_config["local_computer"]):
                 #run('echo \"' + cp.stdout + '\"', shell=True)
 
 else:
-    max_jobs = 25
+    max_jobs = 35
     runnin_jobs = 0
     job_manager = slurmjobmanager.SlurmJobManager(max_jobs=max_jobs, user=main_config["cluster_user"],error_log_file="recon_errors.log")
 
