@@ -447,7 +447,16 @@ class Model(object):
 
         assert m1.meta['stable']==True, 'solution unstable'
 
-        m2 = Model(data, gpu=self.gpu)
+        m2 = Model(
+            data,
+            gpu=m1.gpu,
+            kernal=m1.kernal,
+            rbf_width=m1.rbf_width,
+            density_parms=m1.density_parms,
+            radi=m1.radi,
+            apply_motif=m1.apply_motif,
+            motif_matrix_paths=m1.motif_matrix_paths,
+        )
         locs = _union(m1.get_locs(), m2.get_locs())
 
         m1.set_locs(locs)
