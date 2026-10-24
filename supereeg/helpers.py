@@ -28,6 +28,8 @@ from PIL import Image
 from nilearn import plotting as ni_plt
 from nilearn import image, datasets
 from nilearn.input_data import NiftiMasker
+from nilearn.plotting import plot_glass_brain
+from nilearn.image import load_img
 from scipy.stats import kurtosis, zscore, pearsonr
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import cdist
@@ -38,6 +40,8 @@ from scipy.ndimage.interpolation import zoom
 from scipy.sparse import csr_matrix
 from nilearn.maskers import NiftiSpheresMasker
 from nilearn.connectome import ConnectivityMeasure
+from matplotlib.colors import Normalize, to_hex
+from matplotlib.cm import ScalarMappable
 
 try:
     from itertools import zip_longest
@@ -2101,6 +2105,7 @@ def _close_all():
         plt.close(f)
 
 
+#Used in recon.py in the within for loop 
 def _get_fmri_corr_matrix(locs,fmri_nii,radius_addition=0):
     radius = 1
     ready = False
@@ -2136,5 +2141,180 @@ def _get_fmri_corr_matrix(locs,fmri_nii,radius_addition=0):
     correlation_matrix = correlation_measure.fit_transform([time_series])[0]
 
     return correlation_matrix
+
+
+#Used to gather all correlation coefficients (across and within) and location plus statistics (mean,median,variation,standard deviation)
+def _get_recon_results(results_path):
+    within_files = glob.glob(os.path.join(results_path, "*within*"))
+    all_files = glob.glob(os.path.join(results_path, "*"))
+    across_files = [f for f in all_files if "within" not in os.path.basename(f)]
+
+
+    within_data = np.zeros(len(within_files))
+    within_locs = np.zeros((len(within_files),3))
+    for i in range(len(within_files)):
+        load = np.load(within_files[i])
+        if len(load["corrs"]) == 1:
+            within_data[i] = load["corrs"].item()
+            within_locs[i] = load["coord"]
+    
+    mask = ~np.isnan(within_data)
+    within_data = within_data[mask]
+    within_locs = within_locs[mask]
+    within_mean = np.mean(within_data)
+    within_median = np.median(within_data)
+    within_std = np.std(within_data)
+    within_var = np.var(within_data)
+
+
+    across_data = np.zeros(len(across_files))
+    across_locs = np.zeros((len(across_files),3))
+    for i in range(len(across_files)):
+        load = np.load(across_files[i])
+        if len(load["corrs"]) == 1:
+            across_data[i] = load["corrs"].item()
+            across_locs[i] = load["coord"] 
+
+    across_mask = ~np.isnan(across_data)
+    across_data = across_data[across_mask]
+    across_locs = across_locs[across_mask]
+    across_mean = np.mean(across_data)
+    across_median = np.median(across_data)
+    across_std = np.std(across_data)
+    across_var = np.var(across_data)
+
+    data_corr = {"within_corr": within_data, "within_locs":within_locs ,"across_corr":across_data, "across_locs":across_locs}
+    data_stats = {"within_mean":within_mean,"within_median":within_median,"within_std":within_std,"within_var":within_var,
+                  "across_mean":across_mean,"across_median":across_median,"across_std":across_std,"across_var":across_var}
+    
+    return data_corr, data_stats
+
+
+
+#######Graph code#########################
+
+def filter_invalid_coords(coords, threshold=0.1):
+    template = datasets.load_mni152_template(resolution=4)
+    template_data = template.get_fdata()
+    inv_affine = np.linalg.inv(template.affine)
+
+    valid_coords = []
+    mask = np.zeros(len(coords), dtype=bool)   # <-- same length as input
+
+    for i, coord in enumerate(coords):
+        voxel = np.round(inv_affine.dot(list(coord) + [1]))[:3].astype(int)
+        if all(0 <= v < s for v, s in zip(voxel, template_data.shape)):
+            if template_data[tuple(voxel)] > threshold:
+                valid_coords.append(coord)
+                mask[i] = True                 # <-- mark the ORIGINAL index
+
+    return valid_coords, mask
+
+def graph_recon_corr(data, data_stats, motif_data, motif_stats,
+                     graph_title="Electrode Reconstruction Correlation"):
+    colors = {"Within_Raw": "grey",
+              "Across_Raw": "black",
+              "Within_Motif": "cornflowerblue",
+              "Across_Motif": "mediumblue"}
+
+    fig, axs = plt.subplot_mosaic(
+        [["hist",   "hist",   "hist",   "hist"],
+         ["box",    "box",    "box",    "box"],
+         ["b_raw_a","b_raw_a","b_raw_w","b_raw_w"],
+         ["b_mot_a","b_mot_a","b_mot_w","b_mot_w"]],
+        figsize=(23, 18),
+        gridspec_kw={"height_ratios": [4, 1.2, 1.5, 1.5]},
+    )
+    ax_hist = axs["hist"]
+    ax_box  = axs["box"]
+
+    # ---------------- Histogram ----------------
+    ax_hist.hist(data["within_corr"], bins=200, density=True,
+                 color=colors["Within_Raw"], alpha=0.7,
+                 label=f"Within Raw (n = {len(data['within_corr'])}, med = {data_stats['within_median']:.3f}, σ = {data_stats['within_std']:.3f}, σ² = {data_stats['within_var']:.3f})")
+    ax_hist.hist(data["across_corr"], bins=200, density=True,
+                 color=colors["Across_Raw"], alpha=0.7,
+                 label=f"Across Raw (n = {len(data['across_corr'])}, med = {data_stats['across_median']:.3f}, σ = {data_stats['across_std']:.3f}, σ² = {data_stats['across_var']:.3f})")
+    ax_hist.hist(motif_data["within_corr"], bins=200, density=True,
+                 color=colors["Within_Motif"], alpha=0.7,
+                 label=f"Within Motif (n = {len(motif_data['within_corr'])}, med = {motif_stats['within_median']:.3f}, σ = {motif_stats['within_std']:.3f}, σ² = {motif_stats['within_var']:.3f})")
+    ax_hist.hist(motif_data["across_corr"], bins=200, density=True,
+                 color=colors["Across_Motif"], alpha=0.7,
+                 label=f"Across Motif (n = {len(motif_data['across_corr'])}, med = {motif_stats['across_median']:.3f}, σ = {motif_stats['across_std']:.3f}, σ² = {motif_stats['across_var']:.3f})")
+
+    ax_hist.set_ylabel("Electrode Density")
+    ax_hist.legend(fontsize=10)
+    ax_hist.grid()
+    ax_hist.tick_params(labelbottom=False)
+
+    # ---------------- Boxplot ----------------
+    bp = ax_box.boxplot(
+        [data["across_corr"], data["within_corr"],
+         motif_data["across_corr"], motif_data["within_corr"]],
+        tick_labels=["Across_Raw", "Within_Raw", "Across_Motif", "Within_Motif"],
+        positions=[20, 20.5, 21, 21.5],
+        widths=0.35,
+        patch_artist=True,
+        medianprops=dict(color="red", linewidth=1),
+        orientation="horizontal",
+    )
+    for patch, color in zip(bp["boxes"],
+                            [colors["Across_Raw"], colors["Within_Raw"],
+                             colors["Across_Motif"], colors["Within_Motif"]]):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.6)
+
+    ax_box.set_xlabel("Correlation")
+    ax_box.grid()
+    ax_box.set_xlim(ax_hist.get_xlim())
+
+    # ---------------- Glass brains ----------------
+    cmap = plt.cm.viridis
+    norm = Normalize(vmin=-1, vmax=1)
+
+    brain_specs = [
+        ("b_raw_a", data["across_locs"],       data["across_corr"],       "Across Raw"),
+        ("b_raw_w", data["within_locs"],       data["within_corr"],       "Within Raw"),
+        ("b_mot_a", motif_data["across_locs"], motif_data["across_corr"], "Across Motif"),
+        ("b_mot_w", motif_data["within_locs"], motif_data["within_corr"], "Within Motif"),
+    ]
+
+    for key, locs, corr, title in brain_specs:
+        ax_gb = axs[key]
+
+        valid_locs, mask = filter_invalid_coords(locs)
+        valid_corr = corr[mask]
+
+        display = plot_glass_brain(
+            None,
+            display_mode="xz",
+            axes=ax_gb,
+            figure=fig,
+            title=title + f"(n={len(valid_locs)})",
+        )
+
+        if len(valid_locs) > 0:
+            marker_colors = [to_hex(cmap(norm(s))) for s in valid_corr]
+            display.add_markers(
+                valid_locs,
+                marker_color=marker_colors,
+                marker_size=5,
+                alpha=0.6,
+            )
+
+    # ---------------- Colorbar ----------------
+    sm = ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(
+        sm,
+        ax=[axs["b_raw_a"], axs["b_raw_w"], axs["b_mot_a"], axs["b_mot_w"]],
+        orientation="vertical",
+        fraction=0.02,
+        label="Correlation (-1 to 1)",
+        ticks=[-1, -0.5, 0, 0.5, 1],
+    )
+    
+    fig.suptitle(graph_title, fontsize=15, y=0.9)
+    plt.show()
 
 
