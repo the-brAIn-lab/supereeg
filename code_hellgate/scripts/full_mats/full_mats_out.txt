@@ -1,0 +1,90 @@
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1317D_RAM_FR1_0_model.sh]
+Submitted batch job 2143948
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1094T_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143949
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1169P_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143950
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1111M_RAM_FR1_0_model.sh]
+Submitted batch job 2143951
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1163T_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143952
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1106M_RAM_FR1_0_model.sh]
+Submitted batch job 2143953
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1226D_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143954
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1223E_RAM_FR1_0_model.sh]
+Submitted batch job 2143955
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1334T_RAM_FR1_0_model.sh]
+Submitted batch job 2143956
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1135E_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143957
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1067P_RAM_FR1_0_model.sh]
+Submitted batch job 2143958
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1161E_RAM_FR1_0_model.sh]
+Submitted batch job 2143959
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1236J_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143960
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1222M_RAM_FR1_0_model.sh]
+Submitted batch job 2143961
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1207J_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143962
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1137E_RAM_FR1_0_model.sh]
+Submitted batch job 2143963
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1141T_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143964
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1045E_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143965
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1302M_RAM_FR1_0_model.sh]
+Submitted batch job 2143966
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1083J_RAM_FR1_0_model.sh]
+Submitted batch job 2143967
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1221P_RAM_FR1_0_model.sh]
+Submitted batch job 2143968
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1169P_RAM_FR1_0_model.sh]
+Submitted batch job 2143969
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1075J_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143970
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1135E_RAM_FR1_0_model.sh]
+Submitted batch job 2143971
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1092J_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143972
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1260D_RAM_FR1_0_model.sh]
+Submitted batch job 2143974
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1202M_RAM_FR1_0_model.sh]
+Submitted batch job 2143975
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1111M_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143976
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1157C_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143977
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1061T_RAM_FR1_0_model.sh]
+Submitted batch job 2143978
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1273D_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143979
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1207J_RAM_FR1_0_model.sh]
+Submitted batch job 2143980
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1124J_RAM_FR1_1_model.sh]
+Submitted batch job 2143981
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1045E_RAM_FR1_0_model.sh]
+Submitted batch job 2143982
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1277J_RAM_FR1_1_model.sh]
+Submitted batch job 2143983
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1315T_RAM_FR1_0_model.sh]
+Submitted batch job 2143984
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1215M_RAM_FR1_0_model.sh]
+Submitted batch job 2143985
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1321M_RAM_FR1_0_model.sh]
+Submitted batch job 2143986
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1093J_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143987
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1260D_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143988
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1204T_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143989
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1320D_RAM_FR1_0_model.sh]
+Submitted batch job 2143990
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1222M_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143991
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1192C_RAM_CatFR1_0_model.sh]
+Submitted batch job 2143992
+[SUBMITTING JOB: /mnt/beegfs/projects/jc158347/supereeg_jcs/supereeg_env/full_mats/scripts/R1147P_RAM_FR1_0_model.sh]
+Submitted batch job 2143993
